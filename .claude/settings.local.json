@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(tree:*)",
+      "Bash(npm install)",
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(powershell -Command \"if \\(Test-Path V5\\) { Remove-Item -Recurse -Force V5 }; Copy-Item -Recurse V4 V5\")",
+      "Bash(powershell -Command:*)",
+      "Bash(unzip:*)",
+      "Bash(copy \"c:\\\\Users\\\\USER\\\\Desktop\\\\Libragold Web\\\\Images\\\\Logo\\\\lgg.jpg\" \"c:\\\\Users\\\\USER\\\\Desktop\\\\Libragold Web\\\\public\\\\Images\\\\Logo\\\\lgg.jpg\")",
+      "Bash(curl:*)",
+      "Bash(npm ls:*)",
+      "Bash(netstat:*)",
+      "Bash(tasklist:*)",
+      "Bash(WMIC PROCESS WHERE \"ProcessId=15380\" GET CommandLine,Name)",
+      "Bash(gh auth status:*)",
+      "Bash(where:*)",
+      "Bash(git --version:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
