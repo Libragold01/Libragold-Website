@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CreditCard, Building2, Shield, CheckCircle, Clock } from 'lucide-react';
+import { ArrowLeft, CreditCard, Shield, CheckCircle, Clock, Loader } from 'lucide-react';
 import { lotusPayment } from '../services/lotusPayment';
+import { PaymentOptions, formatNaira } from './shared/PaymentOptions';
+import { ThankYouModal } from './shared/ThankYouModal';
 
 interface TourPaymentPageProps {
   bookingData: {
@@ -19,102 +21,136 @@ interface TourPaymentPageProps {
   onPaymentSuccess: () => void;
 }
 
-export function TourPaymentPage({ bookingData, onBack, onPaymentSuccess }: TourPaymentPageProps) {
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'transfer'>('card');
+export function TourPaymentPage({ bookingData, onBack }: TourPaymentPageProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentData, setPaymentData] = useState({
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardName: '',
-    email: bookingData.personalData.email || '',
-    phone: bookingData.personalData.phone || ''
-  });
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [thankYouMessage, setThankYouMessage] = useState('');
 
-  const handleInputChange = (field: string, value: string) => {
-    setPaymentData(prev => ({ ...prev, [field]: value }));
-  };
+  // ─── Resolve total amount ─────────────────────────────────────────────────
 
-  const calculateTotal = () => {
-    const basePrice = parseFloat(bookingData.tour.price.replace(/[^0-9.]/g, ''));
-    const travelers = bookingData.personalData.numberOfTravelers || 1;
-    const subtotal = basePrice * travelers;
-    const serviceCharge = subtotal * 0.05; // 5% service charge
-    return {
-      subtotal,
-      serviceCharge,
-      total: subtotal + serviceCharge
-    };
-  };
+  const basePrice = parseFloat(bookingData.tour.price.replace(/[^0-9.]/g, '')) || 0;
+  const travelers = bookingData.personalData?.numberOfTravelers || 1;
+  const subtotal = basePrice * travelers;
+  const serviceCharge = subtotal * 0.05;
+  const totalUSD = subtotal + serviceCharge;
+  const totalNaira = Math.round(totalUSD * 1510);
 
-  const { subtotal, serviceCharge, total } = calculateTotal();
+  const email: string = bookingData.personalData?.email || 'customer@libragold.com';
 
-  const handlePayment = async () => {
-    setIsProcessing(true);
+  // ─── Helpers ──────────────────────────────────────────────────────────────
 
-    try {
-      // Convert USD to NGN for payment (exchange rate: 1510)
-      const amountNGN = total * 1510;
-
-      const paymentRequest = {
-        amount: amountNGN,
-        currency: 'NGN',
-        email: paymentData.email,
-        reference: lotusPayment.generateReference(),
-        callback_url: window.location.origin + '/payment/success',
-        metadata: {
-          service: 'Tour Booking',
-          tour_name: bookingData.tour.name,
-          travelers: bookingData.personalData.numberOfTravelers,
-          travel_date: bookingData.personalData.travelDate,
-          customer_name: `${bookingData.personalData.firstName} ${bookingData.personalData.lastName}`,
-          phone: paymentData.phone,
-          amount_usd: total
-        }
-      };
-
-      console.log('Initializing Lotus Bank payment for tour...', paymentRequest);
-      const response = await lotusPayment.initializePayment(paymentRequest);
-      console.log('Lotus API response:', response);
-
-      if (response.status && response.data?.authorization_url) {
-        // Redirect to Lotus payment page
-        window.location.href = response.data.authorization_url;
-      } else {
-        setIsProcessing(false);
-        alert('Payment initialization failed: ' + (response.message || 'Please try again.'));
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      setIsProcessing(false);
-      alert('Payment processing error. Please try again.');
+  async function submitToWeb3Forms(paymentMethod: string, extraFields?: Record<string, string>) {
+    const web3FormData = new FormData();
+    web3FormData.append('access_key', 'dc98498a-5066-478d-99f3-8524d9412556');
+    web3FormData.append('subject', `Tour Booking: ${bookingData.tour.name}`);
+    web3FormData.append('tourName', bookingData.tour.name);
+    web3FormData.append('duration', bookingData.tour.duration);
+    web3FormData.append('travelers', String(travelers));
+    web3FormData.append('travelDate', bookingData.personalData?.travelDate || '');
+    web3FormData.append('paymentMethod', paymentMethod);
+    web3FormData.append('totalUSD', `$${totalUSD.toFixed(2)}`);
+    web3FormData.append('totalNaira', formatNaira(totalNaira));
+    const name = `${bookingData.personalData?.firstName || ''} ${bookingData.personalData?.lastName || ''}`.trim();
+    web3FormData.append('customerName', name);
+    web3FormData.append('email', email);
+    web3FormData.append('phone', bookingData.personalData?.phone || '');
+    if (extraFields) {
+      Object.entries(extraFields).forEach(([key, value]) => {
+        web3FormData.append(key, value);
+      });
     }
-  };
+    await fetch('https://api.web3forms.com/submit', { method: 'POST', body: web3FormData });
+  }
 
-  if (isProcessing) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-white rounded-2xl p-8 text-center shadow-xl max-w-md w-full mx-4"
-        >
-          <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <CreditCard className="w-8 h-8 text-white" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Processing Payment</h3>
-          <p className="text-gray-600 mb-4">Please wait while we process your tour booking...</p>
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D4AF37]"></div>
-          </div>
-        </motion.div>
-      </div>
-    );
+  async function initiateLotusPayment(amount: number) {
+    const response = await lotusPayment.initializePayment({
+      amount,
+      currency: 'NGN',
+      email,
+      reference: lotusPayment.generateReference(),
+      callback_url: window.location.origin + '/payment/success',
+      metadata: {
+        service: 'Tour Booking',
+        tour_name: bookingData.tour.name,
+        travelers,
+        travel_date: bookingData.personalData?.travelDate,
+        customer_name: `${bookingData.personalData?.firstName || ''} ${bookingData.personalData?.lastName || ''}`.trim(),
+        phone: bookingData.personalData?.phone,
+        amount_usd: totalUSD,
+      },
+    });
+    if (response.status && response.data?.authorization_url) {
+      window.location.href = response.data.authorization_url;
+    } else {
+      throw new Error(response.message || 'Payment initialization failed. Please try again.');
+    }
+  }
+
+  // ─── Payment Handlers ─────────────────────────────────────────────────────
+
+  async function handlePayNow() {
+    setIsProcessing(true);
+    try {
+      await submitToWeb3Forms('Pay Now - Full Payment');
+      await initiateLotusPayment(totalNaira);
+    } catch (error: any) {
+      alert(error.message || 'Unable to process payment. Please try again.');
+      setIsProcessing(false);
+    }
+  }
+
+  async function handlePayLater() {
+    setIsProcessing(true);
+    try {
+      await submitToWeb3Forms('Pay Later');
+      setThankYouMessage(`Thank you for booking the ${bookingData.tour.name} tour. Our team will contact you to arrange payment.`);
+      setShowThankYou(true);
+    } catch {
+      alert('Unable to submit your booking. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  }
+
+  async function handleInstallmentPayNow(installmentAmount: number, installmentCount: number) {
+    setIsProcessing(true);
+    try {
+      await submitToWeb3Forms('Libragold PSS - First Installment', {
+        installmentPlan: `${installmentCount} payments`,
+        installmentAmount: formatNaira(installmentAmount),
+      });
+      await initiateLotusPayment(installmentAmount);
+    } catch (error: any) {
+      alert(error.message || 'Unable to process payment. Please try again.');
+      setIsProcessing(false);
+    }
+  }
+
+  async function handleInstallmentPayLater(installmentAmount: number, installmentCount: number) {
+    setIsProcessing(true);
+    try {
+      await submitToWeb3Forms('Libragold PSS - Start Later', {
+        installmentPlan: `${installmentCount} payments`,
+        installmentAmount: formatNaira(installmentAmount),
+      });
+      setThankYouMessage(`Thank you for booking the ${bookingData.tour.name} tour and choosing Libragold PSS. We will contact you to start your installment plan.`);
+      setShowThankYou(true);
+    } catch {
+      alert('Unable to submit your booking. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  }
+
+  // ─── Render ───────────────────────────────────────────────────────────────
+
+  if (showThankYou) {
+    return <ThankYouModal message={thankYouMessage} />;
   }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
-      {/* Back Button - Fixed below navbar */}
+      {/* Back Button */}
       <div className="bg-white shadow-sm border-b sticky top-20 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
@@ -131,115 +167,31 @@ export function TourPaymentPage({ bookingData, onBack, onPaymentSuccess }: TourP
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-4">
-            <img src={bookingData.tour.image} alt={bookingData.tour.name} className="w-16 h-16 rounded-lg object-cover" />
+            <img src={bookingData.tour.image} alt={bookingData.tour.name} loading="lazy" className="w-16 h-16 rounded-lg object-cover" />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Complete Your Booking</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Choose Payment Option</h1>
               <p className="text-gray-600">{bookingData.tour.name} • {bookingData.tour.duration}</p>
             </div>
           </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Payment Form */}
+          {/* Payment Options */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Payment Information</h2>
-              
-              {/* Payment Method Selection */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <button
-                  onClick={() => setPaymentMethod('card')}
-                  className={`p-4 border-2 rounded-lg flex items-center gap-3 transition-colors ${
-                    paymentMethod === 'card' ? 'border-[#D4AF37] bg-[#D4AF37]/5' : 'border-gray-200'
-                  }`}
-                >
-                  <CreditCard className="w-5 h-5" />
-                  <span className="font-medium">Card Payment</span>
-                </button>
-                <button
-                  onClick={() => setPaymentMethod('transfer')}
-                  className={`p-4 border-2 rounded-lg flex items-center gap-3 transition-colors ${
-                    paymentMethod === 'transfer' ? 'border-[#D4AF37] bg-[#D4AF37]/5' : 'border-gray-200'
-                  }`}
-                >
-                  <Building2 className="w-5 h-5" />
-                  <span className="font-medium">Bank Transfer</span>
-                </button>
+              <div className="flex items-center gap-2 mb-6">
+                <CreditCard className="w-6 h-6 text-[#D4AF37]" />
+                <h2 className="text-xl font-bold text-gray-900">Payment Options</h2>
               </div>
 
-              {paymentMethod === 'card' ? (
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    placeholder="Card Number"
-                    value={paymentData.cardNumber}
-                    onChange={(e) => handleInputChange('cardNumber', e.target.value)}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Cardholder Name"
-                    value={paymentData.cardName}
-                    onChange={(e) => handleInputChange('cardName', e.target.value)}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent"
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <input
-                      type="text"
-                      placeholder="MM/YY"
-                      value={paymentData.expiryDate}
-                      onChange={(e) => handleInputChange('expiryDate', e.target.value)}
-                      className="p-3 border rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent"
-                    />
-                    <input
-                      type="text"
-                      placeholder="CVV"
-                      value={paymentData.cvv}
-                      onChange={(e) => handleInputChange('cvv', e.target.value)}
-                      className="p-3 border rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-blue-900 mb-2">Bank Transfer Details</h3>
-                  <div className="space-y-1 text-sm text-blue-800">
-                    <p><strong>Bank:</strong> Lotus Bank</p>
-                    <p><strong>Account Name:</strong> LibraGold Travels Ltd</p>
-                    <p><strong>Account Number:</strong> 1234567890</p>
-                    <p><strong>Reference:</strong> {bookingData.bookingId}</p>
-                  </div>
-                  <p className="text-xs text-blue-600 mt-2">
-                    Please use the reference number for your transfer and contact us after payment.
-                  </p>
-                </div>
-              )}
-
-              {/* Contact Information */}
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="email"
-                  placeholder="Email Address"
-                  value={paymentData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="p-3 border rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent"
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number"
-                  value={paymentData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className="p-3 border rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent"
-                />
-              </div>
-
-              {/* Security Notice */}
-              <div className="mt-6 flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <Shield className="w-5 h-5 text-green-600" />
-                <p className="text-sm text-green-800">
-                  Your payment is secured by Lotus Bank's advanced encryption technology.
-                </p>
-              </div>
+              <PaymentOptions
+                totalNaira={totalNaira}
+                isProcessing={isProcessing}
+                onPayNow={handlePayNow}
+                onPayLater={handlePayLater}
+                onInstallmentPayNow={handleInstallmentPayNow}
+                onInstallmentPayLater={handleInstallmentPayLater}
+              />
             </div>
           </div>
 
@@ -247,7 +199,6 @@ export function TourPaymentPage({ bookingData, onBack, onPaymentSuccess }: TourP
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Booking Summary</h3>
-              
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tour Package</span>
@@ -255,7 +206,7 @@ export function TourPaymentPage({ bookingData, onBack, onPaymentSuccess }: TourP
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Travelers</span>
-                  <span className="font-medium">{bookingData.personalData.numberOfTravelers}</span>
+                  <span className="font-medium">{travelers}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal</span>
@@ -267,7 +218,10 @@ export function TourPaymentPage({ bookingData, onBack, onPaymentSuccess }: TourP
                 </div>
                 <div className="border-t pt-3 flex justify-between">
                   <span className="text-lg font-bold text-gray-900">Total</span>
-                  <span className="text-lg font-bold text-[#D4AF37]">${total.toFixed(2)}</span>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-[#D4AF37]">${totalUSD.toFixed(2)}</div>
+                    <div className="text-sm text-gray-500">{formatNaira(totalNaira)}</div>
+                  </div>
                 </div>
               </div>
 
@@ -285,18 +239,25 @@ export function TourPaymentPage({ bookingData, onBack, onPaymentSuccess }: TourP
                   <span>Secure payment processing</span>
                 </div>
               </div>
-
-              <button
-                onClick={handlePayment}
-                disabled={paymentMethod === 'card' && (!paymentData.cardNumber || !paymentData.cvv)}
-                className="w-full bg-[#D4AF37] text-white py-4 rounded-lg font-semibold hover:bg-[#B8941F] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {paymentMethod === 'card' ? `Pay $${total.toFixed(2)}` : 'Confirm Booking'}
-              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Processing overlay */}
+      {isProcessing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-8 text-center shadow-2xl"
+          >
+            <Loader className="w-10 h-10 text-[#D4AF37] animate-spin mx-auto mb-4" />
+            <p className="text-gray-700 font-medium">Processing your booking...</p>
+            <p className="text-sm text-gray-500 mt-2">Please do not close this page</p>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

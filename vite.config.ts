@@ -6,15 +6,26 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   build: {
-    outDir: 'V9',
+    outDir: 'V10',
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        // Split vendor libraries into separate chunks for better caching
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          motion: ['framer-motion'],
+          icons: ['lucide-react'],
+        },
+      },
+    },
+    // Increase chunk size warning limit slightly (images are in /public)
+    chunkSizeWarningLimit: 600,
   },
   server: {
-    // Redirect all requests to index.html for client-side routing
     historyApiFallback: true,
   },
   preview: {
-    // Also for production preview
     historyApiFallback: true,
   },
 })

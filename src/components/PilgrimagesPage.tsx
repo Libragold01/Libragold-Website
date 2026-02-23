@@ -142,7 +142,7 @@ export function PilgrimagesPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-3 sm:mb-4 text-center">
-                Hajj Packages
+                Hajj 2027 Packages
               </h2>
               <p className="text-base sm:text-xl text-gray-600 text-center mb-8 sm:mb-12">Complete your spiritual obligation with our premium Hajj services</p>
 
