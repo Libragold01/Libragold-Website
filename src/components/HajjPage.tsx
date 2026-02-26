@@ -15,9 +15,9 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
 
   const packages = [
     {
-      name: 'Budget Hajj',
+      name: 'Budget Hajj 2027',
       duration: '21-23 Days',
-      dates: 'May 12/15 - June 2/4, 2026',
+      dates: 'Registration Closes: Nov 30th, 2026',
       travelType: 'General',
       itinerary: 'MEDINA: 13/14 - 18 May | MAKKAH: 18 - 31 May | MASHER: 25-29 May',
       occupancy: [
@@ -40,9 +40,9 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
       note: 'Prices shown are for group travel only. Individual travelers pay additional cost.'
     },
     {
-      name: 'Comfort Hajj',
+      name: 'Comfort Hajj 2027',
       duration: '21-23 Days',
-      dates: 'May 12/15 - June 2/4, 2026',
+      dates: 'Registration Closes: Nov 30th, 2026',
       travelType: 'General',
       itinerary: 'MEDINA: 13/14 - 18 May | MAKKAH: 18 - 31 May | MASHER: 25-29 May',
       occupancy: [
@@ -68,9 +68,9 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
       note: 'Prices shown are for group travel only. Individual travelers pay additional cost.'
     },
     {
-      name: 'Executive Hajj',
+      name: 'Executive Hajj 2027',
       duration: '15-16 Days',
-      dates: 'May 15/17 - 30/31, 2026',
+      dates: 'Registration Closes: Nov 30th, 2026',
       travelType: 'General',
       itinerary: 'MEDINA: 15-18 May | SWISSOTEL MAKKAH: 18-25 May | MASHER: 25-30 May | AZIZIYA: 29-31 May',
       occupancy: [
@@ -97,9 +97,9 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
       upgrade: 'VIP A+ Kidana towers available: Quad ₦23M | Triple ₦23.5M | Double ₦25M | Single ₦32.5M'
     },
     {
-      name: 'VIP Hajj',
+      name: 'VIP Hajj 2027',
       duration: '14 Days',
-      dates: 'May 17/18 - 30/31, 2026',
+      dates: 'Registration Closes: Nov 30th, 2026',
       travelType: 'VIP',
       itinerary: 'MEDINA: 18-21 May | MAKKAH: 22-31 May | MASHER: 25-29 May',
       occupancy: [
@@ -124,9 +124,9 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
       flightIncluded: true
     },
     {
-      name: 'VVIP Hajj',
+      name: 'VVIP Hajj 2027',
       duration: '14 Days',
-      dates: 'May 17/18 - 30/31, 2026',
+      dates: 'Registration Closes: Nov 30th, 2026',
       travelType: 'VIP',
       itinerary: 'MEDINA: 28-31 May | FAIRMONT MAKKAH: 31 May - 10 June',
       occupancy: [
@@ -155,7 +155,7 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
 
   const handleBookPackage = (pkg: any) => {
     const packageDetails = {
-      service: 'Hajj 2026',
+      service: 'Hajj 2027',
       package: pkg.name,
       duration: pkg.dates,
       itinerary: pkg.itinerary,
@@ -196,7 +196,7 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
         <div className="absolute inset-0">
           <img
             src="/Images/Hero Section/makkah-pilgrimage.jpeg"
-            alt="Hajj 2026"
+            alt="Hajj 2027"
             className="w-full h-full object-cover opacity-60"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/90 via-[#F4E4C1]/80 to-[#FFE5B4]/90"></div>
@@ -217,7 +217,7 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-bold text-black mb-6"
           >
-            Hajj 2026
+            Hajj 2027
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -230,7 +230,7 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
           <div className="flex flex-wrap justify-center gap-4 text-black/70">
             <div className="flex items-center gap-2 bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full">
               <Calendar className="w-5 h-5" />
-              <span>May - June 2026</span>
+              <span>May - June 2027</span>
             </div>
             <div className="flex items-center gap-2 bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full">
               <MapPin className="w-5 h-5" />
@@ -281,7 +281,7 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-gray-800">
             <Clock className="w-4 h-4 inline mr-2" />
-            <strong>Hajj Seminar:</strong> Sunday, 22nd March - 10 May, 2026
+            <strong>Hajj Seminar:</strong> Sunday, 22nd March - 10 May, 2027
           </p>
         </div>
       </div>

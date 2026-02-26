@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, User, FileText, CreditCard, Loader, CheckCircle, Banknote, Clock, Layers, Home, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { lotusPayment } from '../services/lotusPayment';
+import { WEB3FORMS_KEY } from '../config';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -63,6 +64,7 @@ export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted 
     gender: '', nationality: '', address: '',
     passportNumber: '', passportIssueDate: '', passportExpiryDate: '', placeOfIssue: '',
     emergencyName: '', emergencyPhone: '', emergencyRelation: '',
+    referralCode: '', // Optional LWA ambassador referral code
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -79,7 +81,7 @@ export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted 
 
   async function submitToWeb3Forms(paymentMethod: string, extraFields?: Record<string, string>) {
     const web3FormData = new FormData();
-    web3FormData.append('access_key', 'dc98498a-5066-478d-99f3-8524d9412556');
+    web3FormData.append('access_key', WEB3FORMS_KEY);
     web3FormData.append('subject', `New Booking: ${packageDetails.service} - ${packageDetails.package}`);
     web3FormData.append('service', packageDetails.service);
     web3FormData.append('package', packageDetails.package);
@@ -372,6 +374,14 @@ export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted 
                     <label className="block text-sm font-medium text-gray-700 mb-2">Address *</label>
                     <textarea name="address" value={formData.address} onChange={handleInputChange} required rows={3}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Referral Code <span className="text-gray-400 font-normal">(Optional — enter your LWA ambassador code)</span>
+                    </label>
+                    <input type="text" name="referralCode" value={formData.referralCode} onChange={handleInputChange}
+                      placeholder="e.g. LWA01"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent uppercase" />
                   </div>
                 </div>
               </motion.div>

@@ -4,6 +4,7 @@ import { ArrowLeft, User, CreditCard, MapPin, Star, Loader } from 'lucide-react'
 import { lotusPayment } from '../services/lotusPayment';
 import { PaymentOptions, formatNaira } from './shared/PaymentOptions';
 import { ThankYouModal } from './shared/ThankYouModal';
+import { WEB3FORMS_KEY } from '../config';
 
 interface BookingData {
   hotel: any;
@@ -34,6 +35,7 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
     nationality: '',
     passportNumber: '',
     specialRequests: '',
+    referralCode: '', // Optional LWA ambassador referral code
   });
   const [selectedPersonCount, setSelectedPersonCount] = useState(1);
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -60,7 +62,7 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
     setIsProcessing(true);
 
     const web3FormData = new FormData();
-    web3FormData.append('access_key', 'dc98498a-5066-478d-99f3-8524d9412556');
+    web3FormData.append('access_key', WEB3FORMS_KEY);
     web3FormData.append('subject', `Hotel Booking: ${bookingData.hotel?.name}`);
     web3FormData.append('hotelName', bookingData.hotel?.name || '');
     web3FormData.append('roomType', bookingData.roomType);
@@ -73,6 +75,7 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
     web3FormData.append('nationality', formData.nationality);
     web3FormData.append('passportNumber', formData.passportNumber);
     web3FormData.append('specialRequests', formData.specialRequests);
+    if (formData.referralCode) web3FormData.append('referralCode', formData.referralCode);
 
     try {
       await fetch('https://api.web3forms.com/submit', { method: 'POST', body: web3FormData });
@@ -88,7 +91,7 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
 
   async function submitPaymentMethod(paymentMethod: string, extraFields?: Record<string, string>) {
     const web3FormData = new FormData();
-    web3FormData.append('access_key', 'dc98498a-5066-478d-99f3-8524d9412556');
+    web3FormData.append('access_key', WEB3FORMS_KEY);
     web3FormData.append('subject', `Hotel Payment Update: ${bookingData.hotel?.name}`);
     web3FormData.append('hotelName', bookingData.hotel?.name || '');
     web3FormData.append('paymentMethod', paymentMethod);
@@ -263,6 +266,14 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
                         <textarea name="specialRequests" value={formData.specialRequests} onChange={handleInputChange} rows={3}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent"
                           placeholder="Any special requests or requirements" />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Referral Code <span className="text-gray-400 font-normal">(Optional — enter your LWA ambassador code)</span>
+                        </label>
+                        <input type="text" name="referralCode" value={formData.referralCode} onChange={handleInputChange}
+                          placeholder="e.g. LWA01"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent uppercase" />
                       </div>
 
                       {/* Person count selector */}

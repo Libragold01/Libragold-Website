@@ -206,7 +206,7 @@ export function Footer() {
         <div className="border-t border-white/10 py-6 sm:py-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-xs sm:text-sm text-center sm:text-left">
-              © 2024 LibraGold. All Rights Reserved.
+              © 1996–2026 Libragold Group. All Rights Reserved.
             </p>
             <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs sm:text-sm">
               <Link

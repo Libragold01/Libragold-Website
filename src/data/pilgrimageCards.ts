@@ -50,7 +50,7 @@ export const hajjCards: HajjCardSummary[] = [
   {
     name: 'Budget Hajj 2027',
     slug: 'budget',
-    duration: 'May 2027',
+    duration: 'Reg. Closes: Nov 30, 2026',
     image: HERO_IMAGE,
     description: 'Affordable Hajj package with essential services',
     features: ['Economy hotels', 'One meal daily', 'Shared transportation', 'Economy flight included'],
@@ -59,7 +59,7 @@ export const hajjCards: HajjCardSummary[] = [
   {
     name: 'Comfort Hajj 2027',
     slug: 'comfort',
-    duration: 'May 2027',
+    duration: 'Reg. Closes: Nov 30, 2026',
     image: HERO_IMAGE,
     description: 'Comfortable pilgrimage with budget hotels near Haram',
     features: ['Budget hotels (8-10 mins to Haram)', 'Two meals daily', 'AC transportation', 'Economy flight'],
@@ -68,7 +68,7 @@ export const hajjCards: HajjCardSummary[] = [
   {
     name: 'Executive Standard Hajj 2027',
     slug: 'executive',
-    duration: 'May 2027',
+    duration: 'Reg. Closes: Nov 30, 2026',
     image: HERO_IMAGE,
     description: '5-star Swissotel Makkah Clock Tower with premium services',
     features: ['5★ Swissotel Makkah Clock Tower', '4★ Medina hotel', 'Train service MED-MAK', 'Economy flight'],
@@ -77,7 +77,7 @@ export const hajjCards: HajjCardSummary[] = [
   {
     name: 'VIP Hajj 2027',
     slug: 'vip',
-    duration: 'May 2027',
+    duration: 'Reg. Closes: Nov 30, 2026',
     image: HERO_IMAGE,
     description: 'Premium VIP experience with VIP A+ Kidana towers and luxury services',
     features: ['5★ Swissotel Makkah Clock Tower', 'VIP A+ Kidana towers', 'Executive transportation', 'Economy flight'],
@@ -86,7 +86,7 @@ export const hajjCards: HajjCardSummary[] = [
   {
     name: 'VVIP Hajj 2027',
     slug: 'vvip',
-    duration: 'May 2027',
+    duration: 'Reg. Closes: Nov 30, 2026',
     image: HERO_IMAGE,
     description: 'Ultimate luxury with Fairmont Makkah Clock Hotel (flight not included)',
     features: ['Fairmont Makkah Clock Hotel', 'VIP Tent A', 'Biz class train', 'Airport meet & greet'],

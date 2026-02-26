@@ -31,6 +31,7 @@ const FAQPage = lazy(() => import('../components/FAQPage').then(m => ({ default:
 const PrivacyPage = lazy(() => import('../components/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
 const TermsPage = lazy(() => import('../components/TermsPage').then(m => ({ default: m.TermsPage })));
 const CookiePage = lazy(() => import('../components/CookiePage').then(m => ({ default: m.CookiePage })));
+const LWAForm = lazy(() => import('../components/LWAForm').then(m => ({ default: m.LWAForm })));
 const NotFoundPage = lazy(() => import('../components/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 export const routes: RouteObject[] = [
@@ -87,6 +88,7 @@ export const routes: RouteObject[] = [
       },
 
       // Other Services
+      { path: 'lwa', element: <LWAForm /> },
       { path: 'ticketing', element: <TicketingForm /> },
       { path: 'admission', element: <AdmissionForm /> },
       { path: 'gallery', element: <GalleryPage /> },

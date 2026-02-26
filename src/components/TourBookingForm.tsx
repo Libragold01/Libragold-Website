@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, User, FileText, CreditCard } from 'lucide-react';
+import { WEB3FORMS_KEY } from '../config';
 
 interface TourBookingFormProps {
   tour: {
@@ -43,7 +44,10 @@ export function TourBookingForm({ tour, onFormSubmitted, onBack }: TourBookingFo
     travelDate: '',
     numberOfTravelers: 1,
     roomPreference: 'double',
-    specialRequests: ''
+    specialRequests: '',
+
+    // Optional LWA ambassador referral code
+    referralCode: '',
   });
 
   const handleInputChange = (field: string, value: string | number | boolean) => {
@@ -58,7 +62,8 @@ export function TourBookingForm({ tour, onFormSubmitted, onBack }: TourBookingFo
       tour,
       personalData: formData,
       totalAmount: `${tour.price} x ${formData.numberOfTravelers}`,
-      bookingId: `TUR${Date.now()}`
+      bookingId: `TUR${Date.now()}`,
+      referralCode: formData.referralCode || undefined,
     };
     onFormSubmitted(bookingData);
   };
@@ -308,6 +313,18 @@ export function TourBookingForm({ tour, onFormSubmitted, onBack }: TourBookingFo
                   rows={3}
                   className="md:col-span-2 p-3 border rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent"
                 />
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Referral Code <span className="text-gray-400 font-normal">(Optional — enter your LWA ambassador code)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. LWA01"
+                    value={formData.referralCode}
+                    onChange={(e) => handleInputChange('referralCode', e.target.value.toUpperCase())}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent uppercase"
+                  />
+                </div>
               </div>
             </div>
           )}

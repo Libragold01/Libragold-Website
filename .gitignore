@@ -13,6 +13,8 @@ dist-ssr
 V8
 V9
 V10
+V11
+V12
 *.local
 
 # Editor directories and files

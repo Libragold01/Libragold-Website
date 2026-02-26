@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plane, Calendar, Users, MapPin, ArrowRight, CheckCircle, Clock, Globe, Shield, User, Plus, X, Sparkles, Star } from 'lucide-react';
+import { WEB3FORMS_KEY } from '../config';
 
 interface TicketingFormProps {
   onFormSubmitted?: (details?: any) => void;
@@ -14,9 +15,10 @@ export function TicketingForm({ onFormSubmitted }: TicketingFormProps) {
     fullName: '',
     passportNumber: '',
     email: '',
-    phone: ''
+    phone: '',
+    referralCode: '', // Optional LWA ambassador referral code
   });
-  
+
   const [flights, setFlights] = useState([
     { from: '', to: '', departureDate: '', returnDate: '' }
   ]);
@@ -49,7 +51,7 @@ export function TicketingForm({ onFormSubmitted }: TicketingFormProps) {
     setIsSubmitting(true);
 
     const web3FormData = new FormData();
-    web3FormData.append('access_key', 'dc98498a-5066-478d-99f3-8524d9412556');
+    web3FormData.append('access_key', WEB3FORMS_KEY);
     web3FormData.append('subject', 'Flight Ticket Booking Request');
     web3FormData.append('tripType', formData.tripType);
     web3FormData.append('passengers', formData.passengers.toString());
@@ -59,6 +61,7 @@ export function TicketingForm({ onFormSubmitted }: TicketingFormProps) {
     web3FormData.append('email', formData.email);
     web3FormData.append('phone', formData.phone);
     web3FormData.append('flights', JSON.stringify(flights));
+    if (formData.referralCode) web3FormData.append('referralCode', formData.referralCode);
 
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
@@ -103,7 +106,8 @@ export function TicketingForm({ onFormSubmitted }: TicketingFormProps) {
       fullName: '',
       passportNumber: '',
       email: '',
-      phone: ''
+      phone: '',
+      referralCode: '',
     });
     setFlights([{ from: '', to: '', departureDate: '', returnDate: '' }]);
   };
@@ -393,13 +397,20 @@ export function TicketingForm({ onFormSubmitted }: TicketingFormProps) {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent" 
                   required 
                 />
-                <input 
-                  type="tel" 
-                  placeholder="Phone Number" 
-                  value={formData.phone} 
-                  onChange={(e) => handleInputChange('phone', e.target.value)} 
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent" 
-                  required 
+                <input
+                  type="tel"
+                  placeholder="Phone Number"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Referral Code (Optional — e.g. LWA01)"
+                  value={formData.referralCode}
+                  onChange={(e) => handleInputChange('referralCode', e.target.value.toUpperCase())}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent uppercase"
                 />
               </div>
             </div>

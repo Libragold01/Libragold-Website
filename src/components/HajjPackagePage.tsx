@@ -27,8 +27,8 @@ export function HajjPackagePage({ packageName, onBack, onFormSubmitted }: HajjPa
 
   const packageData = {
     'Budget Hajj': {
-      name: 'Budget Hajj 2026',
-      duration: 'May 12/15 - June 2/4, 2026',
+      name: 'Budget Hajj 2027',
+      duration: 'Registration Closes: Nov 30th, 2026',
       itinerary: 'MEDINA: 13/14 - 18 May | MAKKAH: 18 - 31 May | MASHER: 25-29 May',
       priceOptions: [
         { type: 'QUAD', naira: '₦8.5M' },
@@ -50,8 +50,8 @@ export function HajjPackagePage({ packageName, onBack, onFormSubmitted }: HajjPa
       note: 'Prices shown are for group travel only. Individual travelers pay additional cost.'
     },
     'Comfort Hajj': {
-      name: 'Comfort Hajj 2026',
-      duration: 'May 12/15 - June 2/4, 2026',
+      name: 'Comfort Hajj 2027',
+      duration: 'Registration Closes: Nov 30th, 2026',
       itinerary: 'MEDINA: 13/14 - 18 May | MAKKAH: 18 - 31 May | MASHER: 25-29 May',
       priceOptions: [
         { type: 'QUAD', naira: '₦10M' },
@@ -76,8 +76,8 @@ export function HajjPackagePage({ packageName, onBack, onFormSubmitted }: HajjPa
       note: 'Prices shown are for group travel only. Individual travelers pay additional cost.'
     },
     'Executive Hajj': {
-      name: 'Executive Hajj 2026',
-      duration: 'May 15/17 - 30/31, 2026',
+      name: 'Executive Hajj 2027',
+      duration: 'Registration Closes: Nov 30th, 2026',
       itinerary: 'MEDINA: 15-18 May | SWISSOTEL MAKKAH: 18-25 May | MASHER: 25-30 May | AZIZIYA: 29-31 May',
       priceOptions: [
         { type: 'QUAD', naira: '₦15.5M' },
@@ -103,8 +103,8 @@ export function HajjPackagePage({ packageName, onBack, onFormSubmitted }: HajjPa
       upgrade: 'VIP A+ Kidana towers available: Quad ₦23M | Triple ₦23.5M | Double ₦25M | Single ₦32.5M'
     },
     'VIP Hajj': {
-      name: 'VIP Hajj 2026',
-      duration: 'May 17/18 - 30/31, 2026',
+      name: 'VIP Hajj 2027',
+      duration: 'Registration Closes: Nov 30th, 2026',
       itinerary: 'MEDINA: 18-21 May | MAKKAH: 22-31 May | MASHER: 25-29 May',
       priceOptions: [
         { type: 'QUAD', naira: '₦26M' },
@@ -128,8 +128,8 @@ export function HajjPackagePage({ packageName, onBack, onFormSubmitted }: HajjPa
       flightIncluded: true
     },
     'VVIP Hajj': {
-      name: 'VVIP Hajj 2026',
-      duration: 'May 17/18 - 30/31, 2026',
+      name: 'VVIP Hajj 2027',
+      duration: 'Registration Closes: Nov 30th, 2026',
       itinerary: 'MEDINA: 28-31 May | FAIRMONT MAKKAH: 31 May - 10 June',
       priceOptions: [
         { type: 'QUAD', naira: '₦27M' },
@@ -163,7 +163,7 @@ export function HajjPackagePage({ packageName, onBack, onFormSubmitted }: HajjPa
     if (!currentPackage) return;
     const selectedOption = currentPackage.priceOptions[selectedPrice];
     const packageDetails = {
-      service: 'Hajj 2026',
+      service: 'Hajj 2027',
       package: currentPackage.name,
       duration: currentPackage.duration,
       itinerary: currentPackage.itinerary,

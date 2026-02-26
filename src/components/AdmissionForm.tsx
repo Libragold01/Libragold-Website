@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { GraduationCap, User, FileText, CheckCircle, Globe, Users, FileCheck, Award, Plane, ArrowRight } from 'lucide-react';
+import { WEB3FORMS_KEY } from '../config';
 
 interface AdmissionFormProps {
   onFormSubmitted?: () => void;
@@ -15,7 +16,7 @@ export function AdmissionForm({ onFormSubmitted }: AdmissionFormProps) {
 
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
-    formData.append('access_key', 'dc98498a-5066-478d-99f3-8524d9412556');
+    formData.append('access_key', WEB3FORMS_KEY);
     formData.append('subject', 'New Admission Application');
 
     try {
@@ -608,6 +609,19 @@ export function AdmissionForm({ onFormSubmitted }: AdmissionFormProps) {
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Referral Code */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Referral Code <span className="text-gray-400 font-normal">(Optional — enter your LWA ambassador code)</span>
+                </label>
+                <input
+                  type="text"
+                  name="referralCode"
+                  placeholder="e.g. LWA01"
+                  className="w-full max-w-xs px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent uppercase"
+                />
               </div>
 
               {/* Submit Button */}

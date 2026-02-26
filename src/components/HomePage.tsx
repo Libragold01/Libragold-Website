@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Hero } from './Hero';
 import { OurServices } from './OurServices';
 import { SEO } from './SEO';
+import { ErrorBoundary } from './ErrorBoundary';
 
 const WhyChoose = lazy(() => import('./WhyChoose').then(m => ({ default: m.WhyChoose })));
 const GoWithLibraGold = lazy(() => import('./GoWithLibraGold').then(m => ({ default: m.GoWithLibraGold })));
 const PartnersClients = lazy(() => import('./PartnersClients').then(m => ({ default: m.PartnersClients })));
 const UpcomingTours = lazy(() => import('./UpcomingTours').then(m => ({ default: m.UpcomingTours })));
-const TravelTips = lazy(() => import('./TravelTips').then(m => ({ default: m.TravelTips })));
+const LibragoldPSS = lazy(() => import('./LibragoldPSS').then(m => ({ default: m.LibragoldPSS })));
+const LWASection = lazy(() => import('./LWASection').then(m => ({ default: m.LWASection })));
 const Testimonials = lazy(() => import('./Testimonials').then(m => ({ default: m.Testimonials })));
 const Newsletter = lazy(() => import('./Newsletter').then(m => ({ default: m.Newsletter })));
 
@@ -57,14 +59,17 @@ export function HomePage() {
         onBookNow={() => navigate('/pilgrimages')}
       />
       <OurServices onServiceClick={handleServiceClick} />
+      {/* Each section is wrapped in ErrorBoundary so a crash in one section
+          does not take down the rest of the page. */}
       <Suspense fallback={<div className="h-96"></div>}>
-        <WhyChoose />
-        <PartnersClients />
-        <GoWithLibraGold />
-        <UpcomingTours onTourClick={handleTourClick} />
-        <TravelTips />
-        <Testimonials />
-        <Newsletter />
+        <ErrorBoundary><WhyChoose /></ErrorBoundary>
+        <ErrorBoundary><PartnersClients /></ErrorBoundary>
+        <ErrorBoundary><LibragoldPSS /></ErrorBoundary>
+        <ErrorBoundary><GoWithLibraGold /></ErrorBoundary>
+        <ErrorBoundary><UpcomingTours onTourClick={handleTourClick} /></ErrorBoundary>
+        <ErrorBoundary><LWASection /></ErrorBoundary>
+        <ErrorBoundary><Testimonials /></ErrorBoundary>
+        <ErrorBoundary><Newsletter /></ErrorBoundary>
       </Suspense>
     </>
   );

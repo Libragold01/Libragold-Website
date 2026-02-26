@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, User, FileText, Upload, Camera } from 'lucide-react';
 import { PaymentPage } from './PaymentPage';
+import { WEB3FORMS_KEY } from '../config';
 
 interface VisaApplicationFormProps {
   visaType: string;
@@ -43,10 +44,13 @@ export function VisaApplicationForm({ visaType, visaPrice, onBack, onFormSubmitt
     emergencyName: '',
     emergencyPhone: '',
     emergencyRelation: '',
-    
+
     // Documents
     passportPage: null,
-    passportPhoto: null
+    passportPhoto: null,
+
+    // Optional LWA ambassador referral code
+    referralCode: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -83,7 +87,7 @@ export function VisaApplicationForm({ visaType, visaPrice, onBack, onFormSubmitt
 
     // Send visa application data to Web3Forms
     const web3FormData = new FormData();
-    web3FormData.append('access_key', 'dc98498a-5066-478d-99f3-8524d9412556');
+    web3FormData.append('access_key', WEB3FORMS_KEY);
     web3FormData.append('subject', `Visa Application: ${visaType}`);
     web3FormData.append('visaType', visaType);
     web3FormData.append('fullName', formData.fullName);
@@ -108,6 +112,7 @@ export function VisaApplicationForm({ visaType, visaPrice, onBack, onFormSubmitt
     web3FormData.append('emergencyName', formData.emergencyName);
     web3FormData.append('emergencyPhone', formData.emergencyPhone);
     web3FormData.append('emergencyRelation', formData.emergencyRelation);
+    if (formData.referralCode) web3FormData.append('referralCode', formData.referralCode);
 
     try {
       await fetch('https://api.web3forms.com/submit', {
@@ -328,6 +333,19 @@ export function VisaApplicationForm({ visaType, visaPrice, onBack, onFormSubmitt
                       required
                       rows={3}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Referral Code <span className="text-gray-400 font-normal">(Optional — enter your LWA ambassador code)</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="referralCode"
+                      value={formData.referralCode}
+                      onChange={handleInputChange}
+                      placeholder="e.g. LWA01"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent uppercase"
                     />
                   </div>
                 </div>
