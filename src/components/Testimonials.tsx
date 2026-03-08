@@ -4,204 +4,187 @@ import { Star, Quote, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 
 export function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   const testimonials = [
     {
       name: 'Aisha Mohammed',
       role: 'Hajj Pilgrim',
       location: 'Lagos, Nigeria',
-      content: 'My Hajj journey with LibraGold was spiritually fulfilling and perfectly organized. Every moment was handled with care and respect.',
+      content: 'My Hajj journey with Libragold was spiritually fulfilling and perfectly organised. The team handled every detail — flights, accommodation near the Haram, and guides on ground. I felt at peace the entire time.',
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-      trip: 'Hajj 2023'
+      trip: 'Hajj Package 2024',
     },
     {
       name: 'David Okafor',
       role: 'Business Executive',
       location: 'Abuja, Nigeria',
-      content: 'Seamless visa processing for my Dubai business trip. LibraGold made everything effortless and professional.',
+      content: 'My UAE visa was processed within four working days. No back and forth, no stress. Libragold knows exactly what the embassy needs and gets it right the first time.',
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      trip: 'UAE Business Visa'
+      trip: 'UAE Business Visa',
     },
     {
       name: 'Fatima Al-Hassan',
       role: 'Student',
       location: 'Kano, Nigeria',
-      content: 'Thanks to LibraGold, I\'m now studying in the UK. Their admission guidance was exceptional and supportive.',
+      content: "I was confused about the UK admission process until Libragold stepped in. They helped me pick the right university, prepared my documents, and I received my offer letter within two months. I'm currently in my second year.",
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-      trip: 'UK Study Visa'
+      trip: 'UK Study Visa',
     },
     {
       name: 'Ibrahim Yusuf',
-      role: 'Family Traveler',
+      role: 'Family Head',
       location: 'Kaduna, Nigeria',
-      content: 'Our family Umrah was beautifully arranged. The kids loved every moment, and we felt blessed throughout.',
-      rating: 5,
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-      trip: 'Family Umrah'
+      content: 'We went for Umrah as a family of six. The rooms were close to Masjid al-Haram, meals were taken care of, and our guide was very knowledgeable. The kids came back changed in the best way.',
+      rating: 4,
+      trip: 'Family Umrah Package',
     },
     {
-      name: 'Grace Adebayo',
-      role: 'Honeymooner',
+      name: 'Grace Adeyemi',
+      role: 'Newlywed',
       location: 'Port Harcourt, Nigeria',
-      content: 'Our honeymoon in Turkey was magical! LibraGold created the perfect romantic getaway for us.',
+      content: 'Our honeymoon tour to Turkey was seamless. Hotel, transfers, sightseeing — all arranged without us lifting a finger. Libragold made sure everything matched what we were promised.',
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
-      trip: 'Turkey Honeymoon'
-    }
+      trip: 'Turkey Tour Package',
+    },
   ];
 
-  const nextTestimonial = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-  };
+  const nextTestimonial = () => setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  const prevTestimonial = () => setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
 
-  const prevTestimonial = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
+  const current = testimonials[currentIndex];
+
+  // Initials avatar colour cycling
+  const avatarColors = ['from-[#D4AF37] to-amber-600', 'from-blue-500 to-blue-700', 'from-emerald-500 to-teal-700', 'from-purple-500 to-indigo-700', 'from-rose-500 to-red-700'];
 
   return (
-    <section className="py-16 sm:py-24 lg:py-32 bg-gradient-to-br from-[#D4AF37]/5 via-white to-[#F4E4C1]/10 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-[#D4AF37]/10 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-20 right-20 w-40 h-40 bg-[#F4E4C1]/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <section className="py-16 sm:py-24 bg-white border-t border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12 sm:mb-16"
+          className="mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#D4AF37]/10 rounded-full mb-6">
-            <Star className="w-5 h-5 text-[#D4AF37] fill-current" />
-            <span className="text-[#D4AF37] font-semibold">Client Stories</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            Journeys That
-            <span className="block bg-gradient-to-r from-[#D4AF37] to-[#F4E4C1] bg-clip-text text-transparent">
-              Inspire Trust
-            </span>
-          </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-            Real experiences from Nigerian travelers who chose LibraGold for their most important journeys
+          <p className="text-[#D4AF37] font-semibold text-sm tracking-widest uppercase mb-3">
+            What Our Clients Say
           </p>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <h2 className="text-3xl sm:text-5xl font-bold text-gray-900 leading-tight">
+              Real Stories,<br />Real Results
+            </h2>
+            <p className="text-gray-500 max-w-md text-base">
+              Thousands of Nigerian families have travelled with Libragold since 1996. Here are a few of their stories.
+            </p>
+          </div>
         </motion.div>
 
-        {/* Main Testimonial Carousel */}
-        <div className="relative max-w-5xl mx-auto">
+        {/* Carousel */}
+        <div className="relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 shadow-2xl border border-gray-100 relative overflow-hidden"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.35 }}
+              className="bg-gray-50 border border-gray-200 rounded-2xl p-6 sm:p-10"
             >
-              {/* Decorative Elements */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#D4AF37]/10 to-transparent rounded-bl-full"></div>
-              <Quote className="w-12 h-12 text-[#D4AF37] mb-6 relative z-10" />
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-center">
-                {/* Testimonial Content */}
-                <div className="md:col-span-2 lg:col-span-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+
+                {/* Left: Quote */}
+                <div className="md:col-span-2">
+                  <Quote className="w-8 h-8 text-[#D4AF37] mb-5" />
+
+                  {/* Stars */}
                   <div className="flex items-center gap-1 mb-4">
-                    {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-[#D4AF37] fill-current" />
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${i < current.rating ? 'text-[#D4AF37] fill-current' : 'text-gray-300'}`}
+                      />
                     ))}
+                    <span className="text-sm text-gray-500 ml-1">{current.rating}.0 / 5</span>
                   </div>
-                  
-                  <p className="text-xl sm:text-2xl text-gray-700 leading-relaxed mb-6 font-light">
-                    "{testimonials[currentIndex].content}"
+
+                  <p className="text-gray-700 text-lg sm:text-xl leading-relaxed mb-8">
+                    "{current.content}"
                   </p>
-                  
+
+                  {/* Author */}
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#F4E4C1] flex items-center justify-center text-2xl font-bold text-white">
-                      {testimonials[currentIndex].name.charAt(0)}
+                    <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${avatarColors[currentIndex]} flex items-center justify-center text-white font-bold text-lg flex-shrink-0`}>
+                      {current.name.charAt(0)}
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-gray-900">
-                        {testimonials[currentIndex].name}
-                      </h4>
-                      <p className="text-gray-600 font-medium">
-                        {testimonials[currentIndex].role}
-                      </p>
-                      <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                      <p className="font-bold text-gray-900">{current.name}</p>
+                      <p className="text-gray-500 text-sm">{current.role}</p>
+                      <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
                         <MapPin className="w-3 h-3" />
-                        {testimonials[currentIndex].location}
+                        {current.location}
                       </div>
                     </div>
                   </div>
                 </div>
-                
-                {/* Trip Badge */}
-                <div className="lg:col-span-1 flex justify-center">
-                  <div className="bg-gradient-to-br from-[#D4AF37] to-[#F4E4C1] p-6 rounded-2xl text-center shadow-lg">
-                    <div className="text-2xl mb-2">✈️</div>
-                    <div className="text-black font-bold text-lg">
-                      {testimonials[currentIndex].trip}
-                    </div>
-                    <div className="text-black/70 text-sm mt-1">Experience</div>
+
+                {/* Right: Trip tag */}
+                <div className="flex md:justify-end items-start">
+                  <div className="border border-[#D4AF37]/30 bg-[#D4AF37]/5 rounded-xl p-5 text-center min-w-[140px]">
+                    <p className="text-xs font-semibold text-[#D4AF37] uppercase tracking-wider mb-1">Service Used</p>
+                    <p className="text-gray-900 font-bold text-base">{current.trip}</p>
                   </div>
                 </div>
               </div>
             </motion.div>
           </AnimatePresence>
-          
-          {/* Navigation Buttons */}
-          <button
-            onClick={prevTestimonial}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-[#D4AF37] hover:text-white transition-all duration-300 z-10"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          
-          <button
-            onClick={nextTestimonial}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-[#D4AF37] hover:text-white transition-all duration-300 z-10"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
+
+          {/* Nav arrows */}
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex gap-2">
+              {testimonials.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  className={`h-2 rounded-full transition-all duration-300 ${i === currentIndex ? 'bg-[#D4AF37] w-6' : 'bg-gray-300 w-2 hover:bg-gray-400'}`}
+                />
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={prevTestimonial}
+                className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={nextTestimonial}
+                className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
         </div>
-        
-        {/* Testimonial Indicators */}
-        <div className="flex justify-center gap-2 mt-8">
-          {testimonials.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentIndex ? 'bg-[#D4AF37] w-8' : 'bg-gray-300 hover:bg-gray-400'
-              }`}
-            />
-          ))}
-        </div>
-        
-        {/* Stats Section */}
+
+        {/* Stats — clean row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-16 border-t border-gray-200"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-14 pt-10 border-t border-gray-200"
         >
-          <div className="text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-[#D4AF37] mb-2">5,000+</div>
-            <div className="text-gray-600">Happy Travelers</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-[#D4AF37] mb-2">98%</div>
-            <div className="text-gray-600">Success Rate</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-[#D4AF37] mb-2">50+</div>
-            <div className="text-gray-600">Destinations</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-[#D4AF37] mb-2">24/7</div>
-            <div className="text-gray-600">Support</div>
-          </div>
+          {[
+            { value: '5,000+', label: 'Travelers Served' },
+            { value: '28+', label: 'Years in Business' },
+            { value: '50+', label: 'Destinations' },
+            { value: '24/7', label: 'Customer Support' },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
+              <p className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{stat.value}</p>
+              <p className="text-gray-500 text-sm">{stat.label}</p>
+            </div>
+          ))}
         </motion.div>
       </div>
     </section>

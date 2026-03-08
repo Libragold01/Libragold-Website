@@ -27,8 +27,8 @@ export interface PaymentResponse {
 
 class LotusPaymentService {
   private baseURL = 'https://partnerhub.lotusbank.com/api/v1';
-  private publicKey = 'live_365d8dfe2c2c0c6dcde08ceb861a45f025dbe44276deac4fa13d6378698eab6f8ffa6911be5365b48691f6e663040c99pb';
-  private secretKey = 'live_e7936616ef34e6f2dccb99098835b68d5addc8bdcb410f2c168f0253e59681568c64ece5d2d766fedef2b65cdb4417bf1761341058425sk';
+  private publicKey = 'live_7a53461f576ef1c045c61db0918826882a7a3211c0703499a9d95286110cce43e877bf89c4081b0746fa50a0971e8cfapb';
+  private secretKey = 'live_1d72abae39c0b5b81ed8bf3f6b0d4ef48118a27cda9a729de4e2e1a8cd2f087a2eba536d9b9175841ff0d7ae206f20141773007718614sk';
   private webhookUrl = window.location.origin + '/api/webhook/lotus';
 
   async initializePayment(paymentData: PaymentRequest): Promise<PaymentResponse> {
