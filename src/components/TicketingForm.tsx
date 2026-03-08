@@ -410,6 +410,8 @@ export function TicketingForm({ onFormSubmitted }: TicketingFormProps) {
                   placeholder="Referral Code (Optional — e.g. LWA01)"
                   value={formData.referralCode}
                   onChange={(e) => handleInputChange('referralCode', e.target.value.toUpperCase())}
+                  pattern="LWA[0-9]{2,4}"
+                  title="Enter a valid LWA code (e.g. LWA01)"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent uppercase"
                 />
               </div>

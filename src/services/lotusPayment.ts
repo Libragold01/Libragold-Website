@@ -35,8 +35,6 @@ class LotusPaymentService {
     try {
       const endpoint = `${this.baseURL}/checkout/initialize`;
 
-      console.log('Lotus API call:', { endpoint, amount: paymentData.amount, currency: paymentData.currency });
-
       // Amount in Naira (Lotus Bank expects amount in Naira, not kobo)
       const amount = Math.round(paymentData.amount);
 
@@ -45,8 +43,6 @@ class LotusPaymentService {
         amount: amount,
         currency: paymentData.currency || 'NGN'
       };
-
-      console.log('Payment payload:', payload);
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -58,13 +54,8 @@ class LotusPaymentService {
       });
 
       const result = await response.json();
-      console.log('API Response:', result);
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
 
       if (!response.ok || !result.success) {
-        console.error('Payment API error:', result);
-        console.error('Full error details:', JSON.stringify(result, null, 2));
         return {
           status: false,
           message: result.message || result.error || `API Error (${response.status}): Payment initialization failed. Please try again.`,
@@ -81,8 +72,6 @@ class LotusPaymentService {
         }
       };
     } catch (error: any) {
-      console.error('Lotus API Error:', error);
-      // Check if it's a CORS or network error
       if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
         return {
           status: false,
@@ -109,8 +98,7 @@ class LotusPaymentService {
 
       const result = await response.json();
       return result;
-    } catch (error) {
-      console.error('Payment verification failed:', error);
+    } catch {
       return {
         status: false,
         message: 'Payment verification failed.',
@@ -119,7 +107,19 @@ class LotusPaymentService {
   }
 
   generateReference(): string {
-    return `LBG_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Use cryptographically secure random values instead of Math.random()
+    return `LBG_${Date.now()}_${crypto.randomUUID().replace(/-/g, '').slice(0, 9)}`;
+  }
+
+  // Validate that a redirect URL is from the expected Lotus Bank domain
+  // before redirecting the user — prevents open redirect attacks.
+  isSafeRedirectUrl(url: string): boolean {
+    try {
+      const parsed = new URL(url);
+      return parsed.hostname.endsWith('lotusbank.com') || parsed.hostname.endsWith('paystack.com');
+    } catch {
+      return false;
+    }
   }
 
   // Test API connectivity

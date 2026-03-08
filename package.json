@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npx vite",
-    "build": "npx vite build && cp public/.htaccess V12/.htaccess",
+    "build": "npx vite build && cp public/.htaccess V13/.htaccess",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "preview": "npx vite preview"
   },

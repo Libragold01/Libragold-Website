@@ -320,6 +320,8 @@ export function TourBookingForm({ tour, onFormSubmitted, onBack }: TourBookingFo
                   <input
                     type="text"
                     placeholder="e.g. LWA01"
+                    pattern="LWA[0-9]{2,4}"
+                    title="Enter a valid LWA code (e.g. LWA01)"
                     value={formData.referralCode}
                     onChange={(e) => handleInputChange('referralCode', e.target.value.toUpperCase())}
                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent uppercase"

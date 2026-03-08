@@ -79,8 +79,9 @@ export function TourPaymentPage({ bookingData, onBack }: TourPaymentPageProps) {
         amount_usd: totalUSD,
       },
     });
-    if (response.status && response.data?.authorization_url) {
-      window.location.href = response.data.authorization_url;
+    const url = response.data?.authorization_url;
+    if (response.status && url && lotusPayment.isSafeRedirectUrl(url)) {
+      window.location.href = url;
     } else {
       throw new Error(response.message || 'Payment initialization failed. Please try again.');
     }

@@ -620,6 +620,8 @@ export function AdmissionForm({ onFormSubmitted }: AdmissionFormProps) {
                   type="text"
                   name="referralCode"
                   placeholder="e.g. LWA01"
+                  pattern="LWA[0-9]{2,4}"
+                  title="Enter a valid LWA code (e.g. LWA01)"
                   className="w-full max-w-xs px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent uppercase"
                 />
               </div>

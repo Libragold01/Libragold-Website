@@ -122,8 +122,9 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
         amount_usd: totalUSD,
       },
     });
-    if (response.status && response.data?.authorization_url) {
-      window.location.href = response.data.authorization_url;
+    const url = response.data?.authorization_url;
+    if (response.status && url && lotusPayment.isSafeRedirectUrl(url)) {
+      window.location.href = url;
     } else {
       throw new Error(response.message || 'Payment initialization failed. Please try again.');
     }
@@ -272,7 +273,7 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
                           Referral Code <span className="text-gray-400 font-normal">(Optional — enter your LWA ambassador code)</span>
                         </label>
                         <input type="text" name="referralCode" value={formData.referralCode} onChange={handleInputChange}
-                          placeholder="e.g. LWA01"
+                          placeholder="e.g. LWA01" pattern="LWA[0-9]{2,4}" title="Enter a valid LWA code (e.g. LWA01)"
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent uppercase" />
                       </div>
 
