@@ -13,6 +13,7 @@ import { hotelsRouter } from './routes/hotels';
 import { visaPackagesRouter } from './routes/visaPackages';
 import { paymentsRouter } from './routes/payments';
 import { adminsRouter } from './routes/admins';
+import { uploadRouter } from './routes/upload';
 
 dotenv.config();
 
@@ -66,6 +67,11 @@ app.use('/api/tours', toursRouter);
 app.use('/api/hotels', hotelsRouter);
 app.use('/api/visa-packages', visaPackagesRouter);
 app.use('/api/admins', adminsRouter);
+app.use('/api/upload', uploadRouter);
+
+// ─── Serve uploaded images ────────────────────────────────────────────────────
+
+app.use('/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
 
 // ─── Serve Admin SPA in production ───────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowDown, Sparkles } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
 const heroImages = ['/Images/Hero Section/Canada Job Visa_ Pathways, Eligibility & Application Process.jpeg', '/Images/Hero Section/Diverse International Students With Diplomas Celebrating Graduation.jpeg', '/Images/Hero Section/download (18).jpeg', '/Images/Hero Section/The Lush and Luxurious Sanya EDITION on Hainan Island.jpeg', '/Images/Hero Section/makkah-pilgrimage.jpeg'];
 interface HeroProps {
   onExploreDestinations?: () => void;
@@ -52,8 +52,7 @@ export function Hero({ onExploreDestinations, onBookNow }: HeroProps) {
           duration: 0.8,
           delay: 0.2
         }} className="mb-3 sm:mb-6">
-            <span className="inline-flex items-center gap-1 sm:gap-2 px-4 sm:px-4 py-2 sm:py-2 rounded-full glass-dark text-white/90 text-sm sm:text-sm font-medium">
-              <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#D4AF37]" />
+            <span className="inline-flex items-center px-4 sm:px-4 py-2 sm:py-2 rounded-full glass-dark text-white/90 text-sm sm:text-sm font-medium">
               Luxury Travel Redefined
             </span>
           </motion.div>
