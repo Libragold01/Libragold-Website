@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Sparkles } from 'lucide-react';
+import { Send } from 'lucide-react';
 export function Newsletter() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -50,8 +50,7 @@ export function Newsletter() {
       }} viewport={{
         once: true
       }}>
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/20 backdrop-blur-sm mb-6 sm:mb-8">
-            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
+          <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/20 backdrop-blur-sm mb-6 sm:mb-8">
             <span className="text-xs sm:text-sm font-medium">Stay Updated</span>
           </div>
 

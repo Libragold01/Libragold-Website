@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Globe, CalendarDays } from 'lucide-react';
 import { toursApi, Tour } from '../lib/api';
+import { ImageUploader } from '../components/ImageUploader';
 
 // ─── Variants ────────────────────────────────────────────────────────────────
 
@@ -21,6 +22,7 @@ const cardVariants = {
 // ─── Form ─────────────────────────────────────────────────────────────────────
 
 interface TourForm {
+  image: string;
   slug: string;
   title: string;
   destination: string;
@@ -39,7 +41,7 @@ interface TourForm {
 }
 
 const EMPTY_FORM: TourForm = {
-  slug: '', title: '', destination: '', country: '', category: 'Africa',
+  image: '', slug: '', title: '', destination: '', country: '', category: 'Africa',
   duration: '', description: '', priceNGN: '', priceUSD: '',
   departureDate: '', maxGroupSize: '20', requiresVisa: false,
   highlights: '', isActive: true, isFeatured: false,
@@ -47,6 +49,7 @@ const EMPTY_FORM: TourForm = {
 
 function tourToForm(t: Tour): TourForm {
   return {
+    image: t.image ?? '',
     slug: t.slug,
     title: t.title,
     destination: t.destination,
@@ -67,6 +70,7 @@ function tourToForm(t: Tour): TourForm {
 
 function formToPayload(f: TourForm): Record<string, unknown> {
   return {
+    image: f.image || null,
     slug: f.slug,
     title: f.title,
     destination: f.destination,
@@ -324,6 +328,11 @@ function TourModal({ editing, onClose, onSaved }: ModalProps) {
               />
               <span className="text-sm font-medium text-gray-700">Featured</span>
             </label>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Cover Image</label>
+            <ImageUploader value={form.image || null} onChange={(url) => set('image', url ?? '')} />
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-100">

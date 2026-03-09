@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, MapPin, Star } from 'lucide-react';
 import { pilgrimagesApi, Pilgrimage } from '../lib/api';
+import { ImageUploader } from '../components/ImageUploader';
 
 // ─── Variants ────────────────────────────────────────────────────────────────
 
@@ -21,6 +22,7 @@ const cardVariants = {
 // ─── Form defaults ────────────────────────────────────────────────────────────
 
 interface PilgrimageForm {
+  image: string;
   slug: string;
   title: string;
   type: string;
@@ -37,7 +39,7 @@ interface PilgrimageForm {
 }
 
 const EMPTY_FORM: PilgrimageForm = {
-  slug: '', title: '', type: 'Hajj', category: 'Standard',
+  image: '', slug: '', title: '', type: 'Hajj', category: 'Standard',
   season: '', year: '', duration: '', description: '',
   priceFromNGN: '', priceFromUSD: '', features: '',
   isActive: true, isFeatured: false,
@@ -45,6 +47,7 @@ const EMPTY_FORM: PilgrimageForm = {
 
 function pilgrimageToForm(p: Pilgrimage): PilgrimageForm {
   return {
+    image: p.image ?? '',
     slug: p.slug,
     title: p.title,
     type: p.type,
@@ -63,6 +66,7 @@ function pilgrimageToForm(p: Pilgrimage): PilgrimageForm {
 
 function formToPayload(f: PilgrimageForm): Record<string, unknown> {
   return {
+    image: f.image || null,
     slug: f.slug,
     title: f.title,
     type: f.type,
@@ -304,6 +308,11 @@ function PilgrimageModal({ editing, onClose, onSaved }: ModalProps) {
               />
               <span className="text-sm font-medium text-gray-700">Featured</span>
             </label>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Cover Image</label>
+            <ImageUploader value={form.image || null} onChange={(url) => set('image', url ?? '')} />
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-100">

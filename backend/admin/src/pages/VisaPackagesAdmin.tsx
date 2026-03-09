@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, FileCheck } from 'lucide-react';
 import { visaPackagesApi, VisaPackage } from '../lib/api';
+import { ImageUploader } from '../components/ImageUploader';
 
 // ─── Variants ────────────────────────────────────────────────────────────────
 
@@ -21,6 +22,7 @@ const cardVariants = {
 // ─── Form ─────────────────────────────────────────────────────────────────────
 
 interface VisaForm {
+  image: string;
   slug: string;
   name: string;
   country: string;
@@ -36,13 +38,14 @@ interface VisaForm {
 }
 
 const EMPTY_FORM: VisaForm = {
-  slug: '', name: '', country: '', flag: '', priceNGN: '', priceUSD: '',
+  image: '', slug: '', name: '', country: '', flag: '', priceNGN: '', priceUSD: '',
   processingTime: '', validity: '', description: '', requirements: '',
   isActive: true, isFeatured: false,
 };
 
 function visaToForm(v: VisaPackage): VisaForm {
   return {
+    image: v.image ?? '',
     slug: v.slug,
     name: v.name,
     country: v.country,
@@ -60,6 +63,7 @@ function visaToForm(v: VisaPackage): VisaForm {
 
 function formToPayload(f: VisaForm): Record<string, unknown> {
   return {
+    image: f.image || null,
     slug: f.slug,
     name: f.name,
     country: f.country,
@@ -275,6 +279,11 @@ function VisaModal({ editing, onClose, onSaved }: ModalProps) {
               />
               <span className="text-sm font-medium text-gray-700">Featured</span>
             </label>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Cover Image</label>
+            <ImageUploader value={form.image || null} onChange={(url) => set('image', url ?? '')} />
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-100">

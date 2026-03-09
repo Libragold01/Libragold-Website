@@ -108,9 +108,7 @@ function SidebarContent({ onNavigate, onClose }: { onNavigate: () => void; onClo
     <div className="flex flex-col h-full">
       <div className="px-5 py-5 border-b border-white/[0.07] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#D4AF37] rounded-xl flex items-center justify-center font-black text-black text-base flex-shrink-0">
-            L
-          </div>
+          <img src="/logo.png" alt="Libragold" className="w-9 h-9 rounded-xl object-contain flex-shrink-0" />
           <div>
             <div className="text-white font-bold text-sm tracking-wide">LIBRAGOLD</div>
             <div className="text-gray-500 text-xs">Admin Panel</div>
@@ -225,7 +223,7 @@ export function Layout() {
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-[#D4AF37] rounded-lg flex items-center justify-center font-black text-black text-sm">L</div>
+            <img src="/logo.png" alt="Libragold" className="w-7 h-7 rounded-lg object-contain" />
             <span className="font-bold text-gray-900 text-sm">Libragold Admin</span>
           </div>
         </header>
@@ -250,7 +248,7 @@ export function Layout() {
                 transition={{ duration: 0.18 }}
                 className="flex items-center gap-2"
               >
-                <div className="w-7 h-7 bg-[#D4AF37] rounded-lg flex items-center justify-center font-black text-black text-sm">L</div>
+                <img src="/logo.png" alt="Libragold" className="w-7 h-7 rounded-lg object-contain" />
                 <span className="font-bold text-gray-900 text-sm">Libragold Admin</span>
               </motion.div>
             )}

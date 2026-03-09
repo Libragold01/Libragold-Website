@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Building2 } from 'lucide-react';
 import { hotelsApi, Hotel } from '../lib/api';
+import { ImageUploader } from '../components/ImageUploader';
 
 // ─── Variants ────────────────────────────────────────────────────────────────
 
@@ -21,6 +22,7 @@ const cardVariants = {
 // ─── Form ─────────────────────────────────────────────────────────────────────
 
 interface HotelForm {
+  image: string;
   slug: string;
   name: string;
   location: string;
@@ -34,13 +36,14 @@ interface HotelForm {
 }
 
 const EMPTY_FORM: HotelForm = {
-  slug: '', name: '', location: '', country: '', stars: '3',
+  image: '', slug: '', name: '', location: '', country: '', stars: '3',
   description: '', amenities: '', distanceFromHaram: '',
   isActive: true, isFeatured: false,
 };
 
 function hotelToForm(h: Hotel): HotelForm {
   return {
+    image: h.image ?? '',
     slug: h.slug,
     name: h.name,
     location: h.location,
@@ -56,6 +59,7 @@ function hotelToForm(h: Hotel): HotelForm {
 
 function formToPayload(f: HotelForm): Record<string, unknown> {
   return {
+    image: f.image || null,
     slug: f.slug,
     name: f.name,
     location: f.location,
@@ -256,6 +260,11 @@ function HotelModal({ editing, onClose, onSaved }: ModalProps) {
               />
               <span className="text-sm font-medium text-gray-700">Featured</span>
             </label>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Cover Image</label>
+            <ImageUploader value={form.image || null} onChange={(url) => set('image', url ?? '')} />
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-100">
