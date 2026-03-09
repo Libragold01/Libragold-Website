@@ -12,6 +12,7 @@ import { toursRouter } from './routes/tours';
 import { hotelsRouter } from './routes/hotels';
 import { visaPackagesRouter } from './routes/visaPackages';
 import { paymentsRouter } from './routes/payments';
+import { adminsRouter } from './routes/admins';
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.use('/api/pilgrimages', pilgrimagesRouter);
 app.use('/api/tours', toursRouter);
 app.use('/api/hotels', hotelsRouter);
 app.use('/api/visa-packages', visaPackagesRouter);
+app.use('/api/admins', adminsRouter);
 
 // ─── Serve Admin SPA in production ───────────────────────────────────────────
 

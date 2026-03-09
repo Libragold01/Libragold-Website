@@ -17,11 +17,17 @@ async function main() {
       data: {
         username: 'admin',
         password: hashedPassword,
+        role: 'super_admin',
       },
     });
-    console.log('Default admin created: username=admin, password=libragold2026');
+    console.log('Default super admin created: username=admin, password=libragold2026');
   } else {
-    console.log('Admin already exists, skipping...');
+    // Ensure existing admin has super_admin role
+    await prisma.admin.update({
+      where: { username: 'admin' },
+      data: { role: 'super_admin' },
+    });
+    console.log('Admin role updated to super_admin.');
   }
 
   // Seed default site content

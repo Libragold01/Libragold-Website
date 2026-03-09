@@ -10,23 +10,32 @@ import { PilgrimagesAdmin } from './pages/PilgrimagesAdmin';
 import { ToursAdmin } from './pages/ToursAdmin';
 import { HotelsAdmin } from './pages/HotelsAdmin';
 import { VisaPackagesAdmin } from './pages/VisaPackagesAdmin';
+import { AdminsPage } from './pages/AdminsPage';
 import { Layout } from './components/Layout';
+
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#111827]">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+        <p className="text-gray-400 text-sm font-medium">Loading...</p>
+      </div>
+    </div>
+  );
+}
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { admin, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#111827]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm font-medium">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
+  if (isLoading) return <LoadingScreen />;
   if (!admin) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
+function SuperAdminRoute({ children }: { children: React.ReactNode }) {
+  const { admin, isLoading, isSuperAdmin } = useAuth();
+  if (isLoading) return <LoadingScreen />;
+  if (!admin) return <Navigate to="/login" replace />;
+  if (!isSuperAdmin) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }
 
@@ -41,12 +50,15 @@ function AppRoutes() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="bookings" element={<Bookings />} />
         <Route path="payments" element={<Payments />} />
-        <Route path="pilgrimages" element={<PilgrimagesAdmin />} />
-        <Route path="tours" element={<ToursAdmin />} />
-        <Route path="hotels" element={<HotelsAdmin />} />
-        <Route path="visa-packages" element={<VisaPackagesAdmin />} />
         <Route path="lwa" element={<LWA />} />
-        <Route path="content" element={<Content />} />
+
+        {/* Super Admin only */}
+        <Route path="pilgrimages" element={<SuperAdminRoute><PilgrimagesAdmin /></SuperAdminRoute>} />
+        <Route path="tours" element={<SuperAdminRoute><ToursAdmin /></SuperAdminRoute>} />
+        <Route path="hotels" element={<SuperAdminRoute><HotelsAdmin /></SuperAdminRoute>} />
+        <Route path="visa-packages" element={<SuperAdminRoute><VisaPackagesAdmin /></SuperAdminRoute>} />
+        <Route path="content" element={<SuperAdminRoute><Content /></SuperAdminRoute>} />
+        <Route path="admins" element={<SuperAdminRoute><AdminsPage /></SuperAdminRoute>} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

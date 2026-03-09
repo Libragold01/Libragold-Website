@@ -5,6 +5,7 @@ interface AuthContextValue {
   admin: Admin | null;
   token: string | null;
   isLoading: boolean;
+  isSuperAdmin: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -47,8 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAdmin(null);
   }
 
+  const isSuperAdmin = admin?.role === 'super_admin';
+
   return (
-    <AuthContext.Provider value={{ admin, token, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ admin, token, isLoading, isSuperAdmin, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

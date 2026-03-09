@@ -2,13 +2,14 @@ import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, CalendarCheck, CreditCard, Users, FileText, LogOut,
   Menu, X, HeartHandshake, Map, Building2, FileCheck, ChevronDown, ChevronLeft,
+  ShieldCheck, UserCog,
 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 
-interface NavItem { to: string; icon: React.ElementType; label: string; }
-interface NavGroup { label: string; items: NavItem[]; }
+interface NavItem { to: string; icon: React.ElementType; label: string; superAdminOnly?: boolean; }
+interface NavGroup { label: string; items: NavItem[]; superAdminOnly?: boolean; }
 
 const navGroups: NavGroup[] = [
   {
@@ -21,11 +22,12 @@ const navGroups: NavGroup[] = [
   },
   {
     label: 'Manage Listings',
+    superAdminOnly: true,
     items: [
-      { to: '/pilgrimages', icon: HeartHandshake, label: 'Pilgrimages' },
-      { to: '/tours', icon: Map, label: 'Tours' },
-      { to: '/hotels', icon: Building2, label: 'Hotels' },
-      { to: '/visa-packages', icon: FileCheck, label: 'Visa Packages' },
+      { to: '/pilgrimages', icon: HeartHandshake, label: 'Pilgrimages', superAdminOnly: true },
+      { to: '/tours', icon: Map, label: 'Tours', superAdminOnly: true },
+      { to: '/hotels', icon: Building2, label: 'Hotels', superAdminOnly: true },
+      { to: '/visa-packages', icon: FileCheck, label: 'Visa Packages', superAdminOnly: true },
     ],
   },
   {
@@ -34,14 +36,25 @@ const navGroups: NavGroup[] = [
   },
   {
     label: 'Settings',
-    items: [{ to: '/content', icon: FileText, label: 'Site Content' }],
+    superAdminOnly: true,
+    items: [
+      { to: '/content', icon: FileText, label: 'Site Content', superAdminOnly: true },
+      { to: '/admins', icon: UserCog, label: 'Admin Accounts', superAdminOnly: true },
+    ],
   },
 ];
 
-function SidebarNavGroup({ group, onNavigate }: { group: NavGroup; onNavigate: () => void }) {
+function SidebarNavGroup({
+  group, onNavigate, isSuperAdmin,
+}: { group: NavGroup; onNavigate: () => void; isSuperAdmin: boolean }) {
   const [open, setOpen] = useState(true);
   const location = useLocation();
-  const isGroupActive = group.items.some((item) => location.pathname.startsWith(item.to));
+
+  if (group.superAdminOnly && !isSuperAdmin) return null;
+  const visibleItems = group.items.filter(item => !item.superAdminOnly || isSuperAdmin);
+  if (visibleItems.length === 0) return null;
+
+  const isGroupActive = visibleItems.some((item) => location.pathname.startsWith(item.to));
 
   return (
     <div className="mb-1">
@@ -63,7 +76,7 @@ function SidebarNavGroup({ group, onNavigate }: { group: NavGroup; onNavigate: (
             transition={{ duration: 0.18, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            {group.items.map(({ to, icon: Icon, label }) => (
+            {visibleItems.map(({ to, icon: Icon, label }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -88,7 +101,7 @@ function SidebarNavGroup({ group, onNavigate }: { group: NavGroup; onNavigate: (
 }
 
 function SidebarContent({ onNavigate, onClose }: { onNavigate: () => void; onClose?: () => void }) {
-  const { admin, logout } = useAuth();
+  const { admin, isSuperAdmin, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -118,7 +131,12 @@ function SidebarContent({ onNavigate, onClose }: { onNavigate: () => void; onClo
 
       <nav className="flex-1 px-2 py-4 overflow-y-auto space-y-2">
         {navGroups.map((group) => (
-          <SidebarNavGroup key={group.label} group={group} onNavigate={onNavigate} />
+          <SidebarNavGroup
+            key={group.label}
+            group={group}
+            onNavigate={onNavigate}
+            isSuperAdmin={isSuperAdmin}
+          />
         ))}
       </nav>
 
@@ -129,9 +147,20 @@ function SidebarContent({ onNavigate, onClose }: { onNavigate: () => void; onClo
               {admin?.username?.charAt(0).toUpperCase()}
             </span>
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="text-white text-sm font-medium truncate">{admin?.username}</div>
-            <div className="text-gray-500 text-xs">Administrator</div>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              {isSuperAdmin ? (
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#D4AF37] bg-[#D4AF37]/10 px-1.5 py-0.5 rounded">
+                  <ShieldCheck className="w-2.5 h-2.5" />
+                  Super Admin
+                </span>
+              ) : (
+                <span className="text-[10px] font-semibold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded">
+                  Admin
+                </span>
+              )}
+            </div>
           </div>
         </div>
         <button
@@ -153,23 +182,17 @@ export function Layout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
-      {/* Desktop Sidebar — animated width */}
       <motion.aside
         initial={false}
         animate={{ width: desktopCollapsed ? 0 : 240 }}
         transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
         className="hidden lg:block bg-[#0f1623] flex-shrink-0 border-r border-white/[0.06] overflow-hidden"
       >
-        {/* Inner container has fixed width so content doesn't reflow while animating */}
         <div className="w-60 h-full flex flex-col">
-          <SidebarContent
-            onNavigate={() => {}}
-            onClose={() => setDesktopCollapsed(true)}
-          />
+          <SidebarContent onNavigate={() => {}} onClose={() => setDesktopCollapsed(true)} />
         </div>
       </motion.aside>
 
-      {/* Mobile overlay */}
       <AnimatePresence>
         {mobileSidebarOpen && (
           <motion.div
@@ -181,7 +204,6 @@ export function Layout() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Drawer */}
       <AnimatePresence>
         {mobileSidebarOpen && (
           <motion.aside
@@ -198,7 +220,6 @@ export function Layout() {
       </AnimatePresence>
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        {/* Mobile topbar */}
         <header className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-4 flex-shrink-0 shadow-sm">
           <button onClick={() => setMobileSidebarOpen(true)} className="text-gray-600 hover:text-gray-900 transition-colors">
             <Menu className="w-6 h-6" />
@@ -209,7 +230,6 @@ export function Layout() {
           </div>
         </header>
 
-        {/* Desktop topbar — shows toggle button */}
         <header className="hidden lg:flex bg-white border-b border-gray-200 px-4 py-3 items-center gap-3 flex-shrink-0 shadow-sm">
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -220,7 +240,6 @@ export function Layout() {
           >
             <Menu className="w-5 h-5" />
           </motion.button>
-
           <AnimatePresence mode="wait">
             {desktopCollapsed && (
               <motion.div

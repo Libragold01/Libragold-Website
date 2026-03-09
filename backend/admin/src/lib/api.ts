@@ -121,6 +121,7 @@ export const contentApi = {
 export interface Admin {
   id: number;
   username: string;
+  role: string; // 'super_admin' | 'admin'
   createdAt: string;
 }
 
@@ -292,4 +293,25 @@ export const paymentsApi = {
     if (params?.page) qs.set('page', String(params.page));
     return request<{ payments: Payment[]; pagination: Pagination }>(`/payments?${qs}`);
   },
+};
+
+export const adminsApi = {
+  list: () => request<{ admins: Admin[] }>('/admins'),
+  create: (username: string, password: string, role: string) =>
+    request<{ message: string; admin: Admin }>('/admins', {
+      method: 'POST',
+      body: JSON.stringify({ username, password, role }),
+    }),
+  updateRole: (id: number, role: string) =>
+    request<{ message: string; admin: Admin }>(`/admins/${id}/role`, {
+      method: 'PATCH',
+      body: JSON.stringify({ role }),
+    }),
+  resetPassword: (id: number, newPassword: string) =>
+    request<{ message: string }>(`/admins/${id}/password`, {
+      method: 'PATCH',
+      body: JSON.stringify({ newPassword }),
+    }),
+  delete: (id: number) =>
+    request<{ message: string }>(`/admins/${id}`, { method: 'DELETE' }),
 };

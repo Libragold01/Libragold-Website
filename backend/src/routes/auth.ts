@@ -33,7 +33,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 
     const secret = process.env.JWT_SECRET || 'fallback-secret';
     const token = jwt.sign(
-      { adminId: admin.id, username: admin.username },
+      { adminId: admin.id, username: admin.username, role: admin.role },
       secret,
       { expiresIn: '7d' }
     );
@@ -43,6 +43,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       admin: {
         id: admin.id,
         username: admin.username,
+        role: admin.role,
         createdAt: admin.createdAt,
       },
     });
@@ -57,7 +58,7 @@ router.get('/me', requireAuth, async (req: AuthRequest, res: Response): Promise<
   try {
     const admin = await prisma.admin.findUnique({
       where: { id: req.adminId },
-      select: { id: true, username: true, createdAt: true },
+      select: { id: true, username: true, role: true, createdAt: true },
     });
 
     if (!admin) {

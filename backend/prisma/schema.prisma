@@ -164,6 +164,7 @@ model Admin {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   password  String
+  role      String   @default("admin") // 'super_admin' | 'admin'
   createdAt DateTime @default(now())
 }
 
