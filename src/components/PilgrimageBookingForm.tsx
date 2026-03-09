@@ -4,6 +4,7 @@ import { ArrowLeft, User, FileText, CreditCard, Loader, CheckCircle, Banknote, C
 import { useNavigate } from 'react-router-dom';
 import { lotusPayment } from '../services/lotusPayment';
 import { WEB3FORMS_KEY } from '../config';
+import { apiService } from '../services/api';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -44,7 +45,7 @@ function formatNaira(amount: number): string {
 
 // ─── Component ──────────────────────────────────────────────────────────
 
-export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted }: PilgrimageBookingFormProps) {
+export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted: _onFormSubmitted }: PilgrimageBookingFormProps) {
   const navigate = useNavigate();
 
   // Form step state
@@ -76,6 +77,33 @@ export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted 
   const currentPriceStr = selectedOccupancy?.price || packageDetails.price?.naira || '0';
   const totalAmountNaira = parsePriceToNaira(currentPriceStr);
   const installmentAmount = Math.ceil(totalAmountNaira / installmentCount);
+
+  // ─── Backend API submission ─────────────────────────────────────────
+
+  async function submitToBackend(paymentMethod: string, extraFields?: Record<string, string>) {
+    try {
+      await apiService.createBooking({
+        service: 'Pilgrimage',
+        customerName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        amount: currentPriceStr,
+        paymentMethod,
+        referralCode: formData.referralCode || undefined,
+        details: {
+          package: packageDetails.package,
+          occupancy: selectedOccupancy?.type || packageDetails.priceType || 'N/A',
+          duration: packageDetails.duration || '',
+          passportNumber: formData.passportNumber,
+          nationality: formData.nationality,
+          dateOfBirth: formData.dateOfBirth,
+          ...extraFields,
+        },
+      });
+    } catch {
+      // Non-fatal — Web3Forms is the primary fallback
+    }
+  }
 
   // ─── Web3Forms submission ───────────────────────────────────────────
 
@@ -138,7 +166,10 @@ export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted 
   async function handlePayNow() {
     setIsProcessing(true);
     try {
-      await submitToWeb3Forms('Pay Now - Full Payment');
+      await Promise.all([
+        submitToWeb3Forms('Pay Now - Full Payment'),
+        submitToBackend('pay-now'),
+      ]);
       await initiateLotusPayment(totalAmountNaira);
     } catch (error: any) {
       alert(error.message || 'Unable to process payment. Please try again.');
@@ -149,7 +180,7 @@ export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted 
   async function handlePayLater() {
     setIsProcessing(true);
     try {
-      await submitToWeb3Forms('Pay Later');
+      await Promise.all([submitToWeb3Forms('Pay Later'), submitToBackend('pay-later')]);
       setThankYouMessage(`Thank you for filling the form for ${packageDetails.package}`);
       setShowThankYou(true);
     } catch {
@@ -162,11 +193,14 @@ export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted 
   async function handleInstallmentPayNow() {
     setIsProcessing(true);
     try {
-      await submitToWeb3Forms('Libragold PSS - First Installment', {
-        installmentPlan: `${installmentCount} payments`,
-        installmentAmount: formatNaira(installmentAmount),
-        totalAmount: formatNaira(totalAmountNaira),
-      });
+      await Promise.all([
+        submitToWeb3Forms('Libragold PSS - First Installment', {
+          installmentPlan: `${installmentCount} payments`,
+          installmentAmount: formatNaira(installmentAmount),
+          totalAmount: formatNaira(totalAmountNaira),
+        }),
+        submitToBackend('installment', { installmentCount: String(installmentCount), installmentAmount: String(installmentAmount) }),
+      ]);
       await initiateLotusPayment(installmentAmount);
     } catch (error: any) {
       alert(error.message || 'Unable to process payment. Please try again.');
@@ -177,11 +211,14 @@ export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted 
   async function handleInstallmentPayLater() {
     setIsProcessing(true);
     try {
-      await submitToWeb3Forms('Libragold PSS - Start Later', {
-        installmentPlan: `${installmentCount} payments`,
-        installmentAmount: formatNaira(installmentAmount),
-        totalAmount: formatNaira(totalAmountNaira),
-      });
+      await Promise.all([
+        submitToWeb3Forms('Libragold PSS - Start Later', {
+          installmentPlan: `${installmentCount} payments`,
+          installmentAmount: formatNaira(installmentAmount),
+          totalAmount: formatNaira(totalAmountNaira),
+        }),
+        submitToBackend('installment', { installmentCount: String(installmentCount), installmentAmount: String(installmentAmount) }),
+      ]);
       setThankYouMessage(
         `Thank you for filling the form for ${packageDetails.package} and choosing Libragold PSS`
       );

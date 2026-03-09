@@ -1,0 +1,178 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Bookings ─────────────────────────────────────────────────────────────────
+
+model Booking {
+  id            Int       @id @default(autoincrement())
+  bookingRef    String    @unique
+  service       String    // 'Pilgrimage', 'Hotel', 'Tour', 'Visa', 'Ticketing', 'Admission'
+  customerName  String
+  email         String
+  phone         String
+  details       Json
+  status        String    @default("pending") // pending, confirmed, cancelled, completed
+  paymentMethod String?   // 'pay-now', 'pay-later', 'installment'
+  referralCode  String?
+  amount        String?
+  payments      Payment[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// ─── Payments ─────────────────────────────────────────────────────────────────
+
+model Payment {
+  id         Int      @id @default(autoincrement())
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  bookingId  Int
+  reference  String   @unique   // Lotus Bank reference
+  amount     Float
+  currency   String   @default("NGN")
+  method     String             // 'card', 'transfer'
+  status     String   @default("pending") // pending, success, failed
+  lotusData  Json?              // raw response from Lotus Bank
+  isInstallment Boolean @default(false)
+  installmentNumber Int?        // 1, 2, 3... for PSS payments
+  installmentTotal  Int?        // total installment count
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ─── CMS: Pilgrimages ─────────────────────────────────────────────────────────
+
+model Pilgrimage {
+  id               Int      @id @default(autoincrement())
+  slug             String   @unique
+  title            String
+  type             String   // 'Hajj' | 'Umrah'
+  category         String   // 'Standard' | 'Economy' | 'Premium' | 'Budget'
+  season           String?  // 'Ramadan' | 'December' | 'Monthly' | 'Moulud'
+  year             Int?
+  duration         String
+  image            String?
+  description      String
+  features         String[]
+  occupancyOptions Json?    // [{ type: 'Single', priceNGN: 5700000 }, ...]
+  priceFromNGN     Float
+  priceFromUSD     Float    @default(0)
+  isActive         Boolean  @default(true)
+  isFeatured       Boolean  @default(false)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ─── CMS: Tours ───────────────────────────────────────────────────────────────
+
+model Tour {
+  id            Int      @id @default(autoincrement())
+  slug          String   @unique
+  title         String
+  destination   String
+  country       String
+  category      String   // 'Africa' | 'Europe' | 'Asia' | 'Middle East' | 'Americas'
+  duration      String
+  image         String?
+  description   String
+  highlights    String[]
+  includes      String[]
+  priceUSD      Float
+  priceNGN      Float
+  departureDate DateTime?
+  maxGroupSize  Int      @default(20)
+  requiresVisa  Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ─── CMS: Hotels ──────────────────────────────────────────────────────────────
+
+model Hotel {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  name        String
+  location    String
+  country     String
+  stars       Int      @default(3)
+  image       String?
+  description String
+  amenities   String[]
+  roomTypes   Json     // [{ type: 'Standard', priceUSD: 100, priceNGN: 150000, capacity: 2 }]
+  distanceFromHaram String? // for Saudi hotels
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── CMS: Visa Packages ───────────────────────────────────────────────────────
+
+model VisaPackage {
+  id             Int      @id @default(autoincrement())
+  slug           String   @unique
+  name           String
+  country        String
+  flag           String?  // emoji or image url
+  priceUSD       Float
+  priceNGN       Float
+  processingTime String
+  validity       String?
+  requirements   String[]
+  description    String
+  isActive       Boolean  @default(true)
+  isFeatured     Boolean  @default(false)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ─── Ambassadors ──────────────────────────────────────────────────────────────
+
+model LWARegistration {
+  id             Int      @id @default(autoincrement())
+  lwaCode        String   @unique
+  codeNumber     Int      @unique
+  fullName       String
+  email          String
+  phone          String
+  city           String
+  occupation     String
+  socialMedia    String?
+  howHeard       String
+  status         String   @default("active") // active, suspended
+  totalReferrals Int      @default(0)
+  createdAt      DateTime @default(now())
+}
+
+// ─── Admin ────────────────────────────────────────────────────────────────────
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+// ─── Site Content ─────────────────────────────────────────────────────────────
+
+model SiteContent {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  section   String
+  updatedAt DateTime @updatedAt
+}
