@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { SEO } from './SEO';
 
 const faqs = [
   {
@@ -33,6 +34,13 @@ export function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
+    <>
+      <SEO
+        title="Frequently Asked Questions — Libragold Group"
+        description="Find answers to common questions about Libragold Group's Umrah, Hajj, tour packages, visa services, hotel bookings and payment options."
+        canonical="/faq"
+        keywords="Libragold FAQ, Umrah questions, Hajj questions, visa questions, travel FAQ Nigeria"
+      />
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-4 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -67,5 +75,6 @@ export function FAQPage() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

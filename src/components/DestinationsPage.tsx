@@ -1,6 +1,7 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
 import { MapPin, Star } from 'lucide-react';
+import { SEO } from './SEO';
 
 const destinations = [
   { name: 'Saudi Arabia', description: 'Holy cities of Makkah and Madinah for Umrah and Hajj', rating: 4.9, trips: '2,500+' },
@@ -13,6 +14,13 @@ const destinations = [
 
 export function DestinationsPage() {
   return (
+    <>
+      <SEO
+        title="Destinations — Libragold Group"
+        description="Explore our travel destinations including Saudi Arabia, UAE, Turkey, Egypt, Qatar and more. Libragold Group offers curated journeys worldwide."
+        canonical="/destinations"
+        keywords="travel destinations Nigeria, Saudi Arabia tours, UAE tours, Turkey tours, Egypt tours, Qatar tours"
+      />
     <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-4 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -55,5 +63,6 @@ export function DestinationsPage() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

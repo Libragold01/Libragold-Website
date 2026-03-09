@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { SEO } from './SEO';
 
 const offices = [
   {
@@ -62,6 +63,13 @@ export function ContactPage() {
   };
 
   return (
+    <>
+      <SEO
+        title="Contact Us — Libragold Group"
+        description="Get in touch with Libragold Group for inquiries about Umrah, Hajj, tours, hotels, and visa services. Call, WhatsApp, or email us today."
+        canonical="/contact"
+        keywords="contact Libragold, Libragold phone, Libragold email, travel agency Nigeria contact"
+      />
     <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-4 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -134,5 +142,6 @@ export function ContactPage() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

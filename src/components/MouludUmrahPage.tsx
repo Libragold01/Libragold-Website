@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PilgrimageBookingForm } from './PilgrimageBookingForm';
+import { SEO } from './SEO';
 
 interface MouludUmrahPageProps {
   onBack?: () => void;
@@ -64,6 +65,13 @@ export function MouludUmrahPage({ onBack, onFormSubmitted }: MouludUmrahPageProp
   };
 
   return (
+    <>
+      <SEO
+        title="Moulud Umrah Package — Libragold Group"
+        description="Celebrate the Prophet's birthday with a blessed Umrah journey. Libragold Group's Moulud Umrah package includes flights, hotels and guided spiritual activities."
+        canonical="/pilgrimages/moulud-umrah"
+        keywords="Moulud Umrah, Prophet birthday Umrah, Umrah Nigeria, Moulud celebration pilgrimage"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20">
       <div className="relative overflow-hidden py-16 sm:py-32">
         <div className="absolute inset-0">
@@ -157,5 +165,6 @@ export function MouludUmrahPage({ onBack, onFormSubmitted }: MouludUmrahPageProp
         </div>
       </div>
     </div>
+    </>
   );
 }

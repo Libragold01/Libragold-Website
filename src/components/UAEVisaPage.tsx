@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Check, FileText, Clock, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { VisaApplicationForm } from './VisaApplicationForm';
+import { SEO } from './SEO';
 
 interface UAEVisaPageProps {
-  onBack: () => void;
-  onFormSubmitted: (details?: any) => void;
+  onBack?: () => void;
+  onFormSubmitted?: (details?: any) => void;
 }
 
 export function UAEVisaPage({ onBack, onFormSubmitted }: UAEVisaPageProps) {
+  const navigate = useNavigate();
+  const handleBack = onBack ?? (() => navigate(-1));
+  const handleFormSubmitted = onFormSubmitted ?? (() => {});
   const [showApplication, setShowApplication] = useState(false);
 
   const visaDetails = {
@@ -36,18 +41,25 @@ export function UAEVisaPage({ onBack, onFormSubmitted }: UAEVisaPageProps) {
         visaPrice={{ usd: visaDetails.price, naira: visaDetails.price }}
         requirements={visaDetails.requirements}
         onBack={() => setShowApplication(false)}
-        onFormSubmitted={onFormSubmitted}
+        onFormSubmitted={handleFormSubmitted}
       />
     );
   }
 
   return (
+    <>
+      <SEO
+        title="UAE Visa — Libragold Group"
+        description="Apply for a UAE transit visa with Libragold Group. 96-hour transit visa for Emirates Airline passengers. Fast processing in 5 working days."
+        canonical="/visas/uae"
+        keywords="UAE visa Nigeria, Dubai transit visa, 96 hours UAE visa, Emirates Airlines transit visa"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20">
       {/* Back Button - Fixed below navbar */}
       <div className="bg-white shadow-sm border-b sticky top-20 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
-            onClick={onBack}
+            onClick={handleBack}
             className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#D4AF37] bg-gray-100 hover:bg-gray-200 rounded-full transition-all"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -185,5 +197,6 @@ export function UAEVisaPage({ onBack, onFormSubmitted }: UAEVisaPageProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }

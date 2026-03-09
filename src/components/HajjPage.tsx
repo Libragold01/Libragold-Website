@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, ArrowLeft, Calendar, MapPin, Users, Plane, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PilgrimageBookingForm } from './PilgrimageBookingForm';
+import { SEO } from './SEO';
 
 interface HajjPageProps {
   onBack?: () => void;
@@ -190,6 +191,13 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
   }
 
   return (
+    <>
+      <SEO
+        title="Hajj 2027 — Libragold Group"
+        description="Plan your Hajj 2027 with Libragold Group. Comprehensive Hajj packages including premium and budget options for Nigerian pilgrims."
+        canonical="/pilgrimages/hajj"
+        keywords="Hajj 2027, Hajj Nigeria 2027, Hajj packages Nigeria, pilgrimage 2027, Makkah Medina Hajj"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20">
       {/* Hero Section */}
       <div className="relative overflow-hidden py-16 sm:py-20">
@@ -436,5 +444,6 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { PilgrimageBookingForm } from './PilgrimageBookingForm';
 import { ramadanUmrahPackages } from '../data/ramadanUmrahPackages';
 import type { UmrahPackage, SelectedBookingPackage, OccupancyPricing } from '../data/types';
+import { SEO } from './SEO';
 
 interface RamadanUmrahPageProps {
   onBack?: () => void;
@@ -41,6 +42,7 @@ export function RamadanUmrahPage({ onBack, onFormSubmitted }: RamadanUmrahPagePr
 
   if (selectedOccupancy) {
     const pkg = packages.find(p => p.name === selectedOccupancy);
+    if (!pkg) return null;
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20">
         {/* Hero Section */}
@@ -98,12 +100,6 @@ export function RamadanUmrahPage({ onBack, onFormSubmitted }: RamadanUmrahPagePr
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Object.entries(pkg?.pricing || {}).map(([type, price], index) => {
-                const occupancyIcons = {
-                  quad: '👥👥',
-                  triple: '👥👤',
-                  double: '👫',
-                  single: '👤'
-                };
                 const occupancyDescriptions = {
                   quad: 'Share with 3 others - Most economical',
                   triple: 'Share with 2 others - Great value',
@@ -187,6 +183,13 @@ export function RamadanUmrahPage({ onBack, onFormSubmitted }: RamadanUmrahPagePr
   };
 
   return (
+    <>
+      <SEO
+        title="Ramadan Umrah 2026 — Libragold Group"
+        description="Experience the spiritual blessings of Ramadan in Makkah with Libragold Group's exclusive Ramadan Umrah packages for 2026."
+        canonical="/pilgrimages/ramadan-umrah"
+        keywords="Ramadan Umrah 2026, last 10 days Ramadan Makkah, Umrah Ramadan Nigeria, Ramadan pilgrimage"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20">
       {/* Hero Section */}
       <div className="relative overflow-hidden py-16 sm:py-20">
@@ -333,5 +336,6 @@ export function RamadanUmrahPage({ onBack, onFormSubmitted }: RamadanUmrahPagePr
         </div>
       </div>
     </div>
+    </>
   );
 }

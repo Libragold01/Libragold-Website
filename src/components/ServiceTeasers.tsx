@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
 import { MapPin, Heart, FileText, GraduationCap, Hotel } from 'lucide-react';
 const services = [{

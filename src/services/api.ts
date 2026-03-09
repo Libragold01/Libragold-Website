@@ -3,6 +3,13 @@
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
 
+async function get<T>(path: string): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  return data as T;
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
@@ -89,4 +96,76 @@ export const apiService = {
    */
   recordPayment: (payload: PaymentPayload): Promise<{ message: string; payment: unknown }> =>
     post('/payments', payload),
+
+  /** Fetch all active hotels */
+  getHotels: (): Promise<{ hotels: ApiHotel[] }> => get('/hotels'),
+
+  /** Fetch all active tours */
+  getTours: (): Promise<{ tours: ApiTour[] }> => get('/tours'),
+
+  /** Fetch all active visa packages */
+  getVisaPackages: (): Promise<{ packages: ApiVisaPackage[] }> => get('/visa-packages'),
 };
+
+// ---- API shape types (public read) ----
+export interface ApiRoomType {
+  type: string;
+  priceUSD: number;
+  priceNGN: number;
+  capacity: number;
+}
+
+export interface ApiHotel {
+  id: number;
+  slug: string;
+  name: string;
+  location: string;
+  country: string;
+  stars: number;
+  image: string | null;
+  description: string;
+  amenities: string[];
+  roomTypes: ApiRoomType[];
+  distanceFromHaram: string | null;
+  isActive: boolean;
+  isFeatured: boolean;
+  sortOrder: number;
+}
+
+export interface ApiTour {
+  id: number;
+  slug: string;
+  title: string;
+  destination: string;
+  country: string;
+  category: string;
+  duration: string;
+  image: string | null;
+  description: string;
+  highlights: string[];
+  includes: string[];
+  priceUSD: number;
+  priceNGN: number;
+  departureDate: string | null;
+  maxGroupSize: number | null;
+  requiresVisa: boolean;
+  isActive: boolean;
+  isFeatured: boolean;
+  sortOrder: number;
+}
+
+export interface ApiVisaPackage {
+  id: number;
+  slug: string;
+  country: string;
+  visaType: string;
+  priceUSD: number;
+  priceNGN: number;
+  processingDays: number;
+  description: string;
+  requirements: string[];
+  features: string[];
+  isActive: boolean;
+  isFeatured: boolean;
+  sortOrder: number;
+}

@@ -1,6 +1,7 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
 import { Award, Users, Globe, Clock, Heart, Shield, Star, Compass, CheckCircle, Target } from 'lucide-react';
+import { SEO } from './SEO';
 
 export function AboutPage() {
   const stats = [
@@ -18,6 +19,13 @@ export function AboutPage() {
   ];
 
   return (
+    <>
+      <SEO
+        title="About Us — Libragold Group"
+        description="Learn about Libragold Group, Nigeria's leading travel and pilgrimage company providing Umrah, Hajj, tours, visa and hotel services."
+        canonical="/about"
+        keywords="Libragold Group, about us, Nigeria travel company, Hajj company Nigeria, Umrah company Nigeria"
+      />
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden">
       {/* Hero Section */}
       <div className="relative py-20 px-4">
@@ -134,5 +142,6 @@ export function AboutPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

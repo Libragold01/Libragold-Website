@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, MapPin, Calendar, Users, Star, CheckCircle, ArrowRight, Crown, Sparkles, Award, Shield, Plane, Camera } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface TourDetailPageProps {
-  tour: {
+  tour?: {
     name: string;
     duration: string;
     price: { usd: string; naira: string };
@@ -12,11 +12,15 @@ interface TourDetailPageProps {
     rating: number;
     features: string[];
   };
-  onBack: () => void;
-  onBookTour: (packageType: string) => void;
+  onBack?: () => void;
+  onBookTour?: (packageType: string) => void;
 }
 
 export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps) {
+  const navigate = useNavigate();
+  const handleBack = onBack ?? (() => navigate(-1));
+  const handleBookTour = onBookTour ?? (() => {});
+  if (!tour) return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Tour not found.</p></div>;
   const packages = [
     {
       type: 'Standard',
@@ -67,7 +71,7 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
         
         <div className="absolute inset-0 z-20 flex items-center">
           <div className="max-w-6xl mx-auto px-4 w-full">
-            <button onClick={onBack} className="flex items-center gap-2 text-white/90 hover:text-white mb-6 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full transition-all">
+            <button onClick={handleBack} className="flex items-center gap-2 text-white/90 hover:text-white mb-6 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full transition-all">
               <ArrowLeft className="w-4 h-4" />
               Back to Tours
             </button>
@@ -191,7 +195,7 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
                   </div>
                   
                   <motion.button
-                    onClick={() => onBookTour(pkg.type)}
+                    onClick={() => handleBookTour(pkg.type)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-2 shadow-xl ${

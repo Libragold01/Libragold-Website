@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, User, FileText, Upload, Camera } from 'lucide-react';
 import { PaymentPage } from './PaymentPage';
 import { WEB3FORMS_KEY } from '../config';
+import { apiService } from '../services/api';
 
 interface VisaApplicationFormProps {
   visaType: string;
   visaPrice?: { usd: string; naira: string };
+  requirements?: string[];
   onBack: () => void;
   onFormSubmitted: (details: any) => void;
 }
@@ -82,6 +84,25 @@ export function VisaApplicationForm({ visaType, visaPrice, onBack, onFormSubmitt
     }
   };
 
+  async function submitToBackend() {
+    try {
+      await apiService.createBooking({
+        service: 'Visa',
+        customerName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        referralCode: formData.referralCode || undefined,
+        details: {
+          visaType,
+          nationality: formData.nationality,
+          passportNumber: formData.passportNumber,
+          purposeOfVisit: formData.purposeOfVisit,
+          arrivalDate: formData.arrivalDate,
+        },
+      });
+    } catch { /* non-fatal */ }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -115,10 +136,10 @@ export function VisaApplicationForm({ visaType, visaPrice, onBack, onFormSubmitt
     if (formData.referralCode) web3FormData.append('referralCode', formData.referralCode);
 
     try {
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: web3FormData
-      });
+      await Promise.all([
+        fetch('https://api.web3forms.com/submit', { method: 'POST', body: web3FormData }),
+        submitToBackend(),
+      ]);
     } catch (error) {
       console.error('Form submission error:', error);
     }

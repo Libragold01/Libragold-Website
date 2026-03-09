@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Check, FileText, Clock, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { VisaApplicationForm } from './VisaApplicationForm';
+import { SEO } from './SEO';
 
 interface SaudiVisaPageProps {
-  onBack: () => void;
-  onFormSubmitted: (details?: any) => void;
+  onBack?: () => void;
+  onFormSubmitted?: (details?: any) => void;
 }
 
 export function SaudiVisaPage({ onBack, onFormSubmitted }: SaudiVisaPageProps) {
+  const navigate = useNavigate();
+  const handleBack = onBack ?? (() => navigate(-1));
+  const handleFormSubmitted = onFormSubmitted ?? (() => {});
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
 
   const packages = [
@@ -57,18 +62,25 @@ export function SaudiVisaPage({ onBack, onFormSubmitted }: SaudiVisaPageProps) {
         visaPrice={{ usd: selectedPackage.price, naira: selectedPackage.price }}
         requirements={selectedPackage.requirements}
         onBack={() => setSelectedPackage(null)}
-        onFormSubmitted={onFormSubmitted}
+        onFormSubmitted={handleFormSubmitted}
       />
     );
   }
 
   return (
+    <>
+      <SEO
+        title="Saudi Visa — Libragold Group"
+        description="Apply for Saudi Arabia visa with Libragold Group. Umrah visa, tourist visa and business visa processing with fast turnaround."
+        canonical="/visas/saudi"
+        keywords="Saudi visa Nigeria, Saudi Arabia visa, Umrah visa, tourist visa Saudi, Saudi visa processing"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20">
       {/* Back Button - Fixed below navbar */}
       <div className="bg-white shadow-sm border-b sticky top-20 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
-            onClick={onBack}
+            onClick={handleBack}
             className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#D4AF37] bg-gray-100 hover:bg-gray-200 rounded-full transition-all"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -80,8 +92,8 @@ export function SaudiVisaPage({ onBack, onFormSubmitted }: SaudiVisaPageProps) {
       {/* Hero Section */}
       <div className="relative overflow-hidden py-20">
         <div className="absolute inset-0">
-          <img 
-            src="/Images/Hero Section/makkah-pilgrimage.jpeg" 
+          <img
+            src="/Images/Hero Section/makkah-pilgrimage.jpeg"
             alt="Saudi Visa" 
             className="w-full h-full object-cover opacity-60"
           />
@@ -205,5 +217,6 @@ export function SaudiVisaPage({ onBack, onFormSubmitted }: SaudiVisaPageProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }

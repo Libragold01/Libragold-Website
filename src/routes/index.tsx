@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 import { RouteObject } from 'react-router-dom';
 import { RootLayout } from '../layouts/RootLayout';
 
@@ -33,6 +33,7 @@ const TermsPage = lazy(() => import('../components/TermsPage').then(m => ({ defa
 const CookiePage = lazy(() => import('../components/CookiePage').then(m => ({ default: m.CookiePage })));
 const LWAForm = lazy(() => import('../components/LWAForm').then(m => ({ default: m.LWAForm })));
 const NotFoundPage = lazy(() => import('../components/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+const PaymentCallbackPage = lazy(() => import('../components/PaymentCallbackPage').then(m => ({ default: m.PaymentCallbackPage })));
 
 export const routes: RouteObject[] = [
   {
@@ -102,6 +103,10 @@ export const routes: RouteObject[] = [
       { path: 'privacy', element: <PrivacyPage /> },
       { path: 'terms', element: <TermsPage /> },
       { path: 'cookies', element: <CookiePage /> },
+
+      // Payment callbacks
+      { path: 'payment/success', element: <PaymentCallbackPage /> },
+      { path: 'payment/callback', element: <PaymentCallbackPage /> },
 
       // 404 catch-all
       { path: '*', element: <NotFoundPage /> },

@@ -5,6 +5,7 @@ import { lotusPayment } from '../services/lotusPayment';
 import { PaymentOptions, formatNaira } from './shared/PaymentOptions';
 import { ThankYouModal } from './shared/ThankYouModal';
 import { WEB3FORMS_KEY } from '../config';
+import { apiService } from '../services/api';
 
 interface BookingData {
   hotel: any;
@@ -89,6 +90,28 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
 
   // ─── Step 2: Payment helpers ──────────────────────────────────────────────
 
+  async function submitToBackend(paymentMethod: string) {
+    try {
+      await apiService.createBooking({
+        service: 'Hotel',
+        customerName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        paymentMethod,
+        referralCode: formData.referralCode || undefined,
+        details: {
+          hotelName: bookingData.hotel?.name || '',
+          roomType: bookingData.roomType || '',
+          checkIn: bookingData.checkIn || '',
+          checkOut: bookingData.checkOut || '',
+          persons: selectedPersonCount,
+          passportNumber: formData.passportNumber,
+          nationality: formData.nationality,
+        },
+      });
+    } catch { /* non-fatal */ }
+  }
+
   async function submitPaymentMethod(paymentMethod: string, extraFields?: Record<string, string>) {
     const web3FormData = new FormData();
     web3FormData.append('access_key', WEB3FORMS_KEY);
@@ -135,7 +158,7 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
   async function handlePayNow() {
     setIsProcessing(true);
     try {
-      await submitPaymentMethod('Pay Now - Full Payment');
+      await Promise.all([submitPaymentMethod('Pay Now - Full Payment'), submitToBackend('pay-now')]);
       await initiateLotusPayment(totalNaira);
     } catch (error: any) {
       alert(error.message || 'Unable to process payment. Please try again.');
@@ -146,7 +169,7 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
   async function handlePayLater() {
     setIsProcessing(true);
     try {
-      await submitPaymentMethod('Pay Later');
+      await Promise.all([submitPaymentMethod('Pay Later'), submitToBackend('pay-later')]);
       setThankYouMessage(`Thank you for your hotel booking at ${bookingData.hotel?.name}. Our team will contact you to arrange payment.`);
       setShowThankYou(true);
     } catch {
@@ -159,10 +182,10 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
   async function handleInstallmentPayNow(installmentAmount: number, installmentCount: number) {
     setIsProcessing(true);
     try {
-      await submitPaymentMethod('Libragold PSS - First Installment', {
+      await Promise.all([submitPaymentMethod('Libragold PSS - First Installment', {
         installmentPlan: `${installmentCount} payments`,
         installmentAmount: formatNaira(installmentAmount),
-      });
+      }), submitToBackend('installment')]);
       await initiateLotusPayment(installmentAmount);
     } catch (error: any) {
       alert(error.message || 'Unable to process payment. Please try again.');
@@ -173,10 +196,10 @@ export function HotelBookingForm({ bookingData, onBack }: HotelBookingFormProps)
   async function handleInstallmentPayLater(installmentAmount: number, installmentCount: number) {
     setIsProcessing(true);
     try {
-      await submitPaymentMethod('Libragold PSS - Start Later', {
+      await Promise.all([submitPaymentMethod('Libragold PSS - Start Later', {
         installmentPlan: `${installmentCount} payments`,
         installmentAmount: formatNaira(installmentAmount),
-      });
+      }), submitToBackend('installment')]);
       setThankYouMessage(`Thank you for your hotel booking at ${bookingData.hotel?.name} and choosing Libragold PSS. We will contact you to start your installment plan.`);
       setShowThankYou(true);
     } catch {

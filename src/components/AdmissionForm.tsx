@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import { GraduationCap, User, FileText, CheckCircle, Globe, Users, FileCheck, Award, Plane, ArrowRight } from 'lucide-react';
+import { GraduationCap, User, FileText, Globe, Users, FileCheck, Award, Plane } from 'lucide-react';
 import { WEB3FORMS_KEY } from '../config';
+import { apiService } from '../services/api';
+import { SEO } from './SEO';
 
 interface AdmissionFormProps {
   onFormSubmitted?: () => void;
 }
 
 export function AdmissionForm({ onFormSubmitted }: AdmissionFormProps) {
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [showCharges, setShowCharges] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function submitToBackend(formData: FormData) {
+    try {
+      await apiService.createBooking({
+        service: 'Admission',
+        customerName: (formData.get('fullName') as string) || '',
+        email: (formData.get('email') as string) || '',
+        phone: (formData.get('phone') as string) || '',
+        referralCode: (formData.get('referralCode') as string) || undefined,
+        details: {
+          preferredCountry: (formData.get('preferredCountry') as string) || '',
+          levelOfStudy: (formData.get('levelOfStudy') as string) || '',
+          preferredUniversity: (formData.get('preferredUniversity') as string) || '',
+          courseOfStudy: (formData.get('courseOfStudy') as string) || '',
+          intendedStartDate: (formData.get('intendedStartDate') as string) || '',
+        },
+      });
+    } catch { /* non-fatal */ }
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const form = e.target as HTMLFormElement;
@@ -20,15 +40,14 @@ export function AdmissionForm({ onFormSubmitted }: AdmissionFormProps) {
     formData.append('subject', 'New Admission Application');
 
     try {
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: formData
-      });
+      await Promise.all([
+        fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }),
+        submitToBackend(formData),
+      ]);
     } catch (error) {
       console.error('Form submission error:', error);
     }
 
-    setIsSubmitted(true);
     setShowCharges(true);
   };
 
@@ -217,6 +236,13 @@ export function AdmissionForm({ onFormSubmitted }: AdmissionFormProps) {
   }
 
   return (
+    <>
+      <SEO
+        title="School Admission Services — Libragold Group"
+        description="Apply for school admission abroad with Libragold Group. University and college placement services for Nigerian students."
+        canonical="/admission"
+        keywords="school admission abroad Nigeria, study abroad application, university placement Nigeria, Libragold admission"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#D4AF37] via-[#F4E4C1] to-[#FFE5B4] py-20">
@@ -385,7 +411,8 @@ export function AdmissionForm({ onFormSubmitted }: AdmissionFormProps) {
       {/* Application Form */}
       <div id="admission-form" className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <motion.form
+            onSubmit={handleSubmit}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-2xl shadow-xl overflow-hidden border"
@@ -638,9 +665,10 @@ export function AdmissionForm({ onFormSubmitted }: AdmissionFormProps) {
                 </motion.button>
               </div>
             </div>
-          </motion.div>
+          </motion.form>
         </div>
       </div>
     </div>
+    </>
   );
 }

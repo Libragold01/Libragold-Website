@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plane, MapPin, FileText, GraduationCap, Building, ArrowRight, CheckCircle, Star, Users, Clock } from 'lucide-react';
+import { SEO } from './SEO';
 
 const services = [
   {
@@ -92,6 +93,13 @@ export function ServicesPage({ onNavigate }: ServicesPageProps = {}) {
   };
 
   return (
+    <>
+      <SEO
+        title="Our Services — Libragold Group"
+        description="Libragold Group offers Umrah, Hajj, tour packages, hotel bookings, visa processing, flight ticketing and school admission services."
+        canonical="/services"
+        keywords="Libragold services, Umrah packages, Hajj packages, visa processing, hotel booking, flight ticketing, school admission Nigeria"
+      />
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden">
       {/* Hero Section */}
       <div className="relative py-20 px-4">
@@ -226,5 +234,6 @@ export function ServicesPage({ onNavigate }: ServicesPageProps = {}) {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

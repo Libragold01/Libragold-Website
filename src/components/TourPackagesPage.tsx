@@ -1,9 +1,32 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, MapPin, Calendar, Users, Star } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { ArrowRight, MapPin, Star, Loader } from 'lucide-react';
 import { TourDetailPage } from './TourDetailPage';
 import { TourFormPage } from './TourFormPage';
 import { TourPaymentPage } from './TourPaymentPage';
+import { apiService, ApiTour } from '../services/api';
+import { SEO } from './SEO';
+
+function toTourShape(t: ApiTour) {
+  return {
+    name: t.title,
+    slug: t.slug,
+    duration: t.duration,
+    price: {
+      usd: t.priceUSD ? `$${t.priceUSD.toLocaleString()}` : 'Contact Us',
+      naira: t.priceNGN ? `₦${t.priceNGN.toLocaleString()}` : '',
+    },
+    image: t.image || '/Images/Tour Cards/placeholder.jpeg',
+    location: t.destination,
+    rating: 4.7,
+    features: t.highlights,
+    description: t.description,
+    includes: t.includes,
+    departureDate: t.departureDate,
+    maxGroupSize: t.maxGroupSize,
+    requiresVisa: t.requiresVisa,
+  };
+}
 
 interface TourPackagesPageProps {
   onFormSubmitted?: (details?: any) => void;
@@ -14,63 +37,18 @@ export function TourPackagesPage({ onFormSubmitted }: TourPackagesPageProps) {
   const [selectedTour, setSelectedTour] = useState<any>(null);
   const [selectedPackage, setSelectedPackage] = useState<any>(null);
   const [bookingData, setBookingData] = useState<any>(null);
+  const [apiTours, setApiTours] = useState<ReturnType<typeof toTourShape>[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
 
-  const tourPackages = [
-    {
-      name: 'Egypt Explorer',
-      duration: '7 Days',
-      price: { usd: '$1,200', naira: '₦1,800,000' },
-      image: '/Images/Tour Cards/Egypt.jpeg',
-      location: 'Cairo, Luxor, Aswan',
-      rating: 4.8,
-      features: ['Pyramids of Giza', 'Nile River Cruise', 'Valley of Kings', 'All meals included', 'Expert guide']
-    },
-    {
-      name: 'Turkey Adventure',
-      duration: '10 Days',
-      price: { usd: '$1,800', naira: '₦2,700,000' },
-      image: '/Images/Tour Cards/Turkey.jpeg',
-      location: 'Istanbul, Cappadocia, Pamukkale',
-      rating: 4.9,
-      features: ['Hot air balloon ride', 'Hagia Sophia', 'Blue Mosque', 'Turkish baths', 'Cultural experiences']
-    },
-    {
-      name: 'Qatar Luxury',
-      duration: '5 Days',
-      price: { usd: '$2,500', naira: '₦3,750,000' },
-      image: '/Images/Tour Cards/Qatar.jpeg',
-      location: 'Doha, Al Wakrah',
-      rating: 4.7,
-      features: ['Luxury hotels', 'Desert safari', 'Museum tours', 'Shopping experiences', 'Fine dining']
-    },
-    {
-      name: 'Saudi Heritage',
-      duration: '8 Days',
-      price: { usd: '$1,600', naira: '₦2,400,000' },
-      image: '/Images/Tour Cards/Saudi Arabia.jpeg',
-      location: 'Riyadh, Jeddah, Al-Ula',
-      rating: 4.6,
-      features: ['Historical sites', 'Cultural tours', 'Traditional cuisine', 'Heritage villages', 'Modern attractions']
-    },
-    {
-      name: 'South Africa Safari',
-      duration: '12 Days',
-      price: { usd: '$3,200', naira: '₦4,800,000' },
-      image: '/Images/Tour Cards/South Africa.jpeg',
-      location: 'Cape Town, Kruger, Johannesburg',
-      rating: 4.9,
-      features: ['Big Five safari', 'Wine tours', 'Table Mountain', 'Penguin colony', 'Cultural townships']
-    },
-    {
-      name: 'Nigeria Discovery',
-      duration: '6 Days',
-      price: { usd: '$800', naira: '₦1,200,000' },
-      image: '/Images/Tour Cards/Nigeria.jpeg',
-      location: 'Lagos, Abuja, Calabar',
-      rating: 4.5,
-      features: ['Cultural festivals', 'Local cuisine', 'Historical sites', 'Art galleries', 'Music experiences']
-    }
-  ];
+  useEffect(() => {
+    apiService.getTours()
+      .then(({ tours }) => setApiTours(tours.map(toTourShape)))
+      .catch(() => setFetchError('Failed to load tour packages. Please try again.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const tourPackages = apiTours;
 
   const handleTourClick = (tour: any) => {
     setSelectedTour(tour);
@@ -143,6 +121,12 @@ export function TourPackagesPage({ onFormSubmitted }: TourPackagesPageProps) {
 
   return (
     <>
+      <SEO
+        title="Tour Packages — Libragold Group"
+        description="Explore our curated tour packages to Egypt, Turkey, Qatar, Saudi Arabia, South Africa and Nigeria. Book unforgettable travel experiences with Libragold Group."
+        canonical="/tours"
+        keywords="tour packages Nigeria, Egypt tours, Turkey tours, South Africa tours, holiday packages Nigeria"
+      />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       {/* Hero Section */}
       <div className="relative overflow-hidden py-32">
@@ -204,6 +188,20 @@ export function TourPackagesPage({ onFormSubmitted }: TourPackagesPageProps) {
             <p className="text-xl text-gray-600">Choose your next adventure from our premium tour collection</p>
           </motion.div>
 
+          {loading && (
+            <div className="flex justify-center items-center py-20">
+              <Loader className="w-8 h-8 animate-spin text-[#D4AF37]" />
+            </div>
+          )}
+          {fetchError && (
+            <div className="text-center py-16">
+              <p className="text-red-500 mb-4">{fetchError}</p>
+              <button onClick={() => window.location.reload()} className="px-6 py-2 bg-[#D4AF37] text-black font-semibold rounded-full hover:bg-[#C4A030] transition-colors">
+                Retry
+              </button>
+            </div>
+          )}
+          {!loading && !fetchError && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {tourPackages.map((tour, index) => (
               <motion.div
@@ -271,6 +269,7 @@ export function TourPackagesPage({ onFormSubmitted }: TourPackagesPageProps) {
               </motion.div>
             ))}
           </div>
+          )}
         </div>
       </div>
     </div>

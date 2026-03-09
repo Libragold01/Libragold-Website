@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Check, FileText, Clock, AlertCircle, DollarSign } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { VisaApplicationForm } from './VisaApplicationForm';
+import { SEO } from './SEO';
 
 interface SchengenVisaPageProps {
-  onBack: () => void;
-  onFormSubmitted: (details?: any) => void;
+  onBack?: () => void;
+  onFormSubmitted?: (details?: any) => void;
 }
 
 export function SchengenVisaPage({ onBack, onFormSubmitted }: SchengenVisaPageProps) {
+  const navigate = useNavigate();
+  const handleBack = onBack ?? (() => navigate(-1));
+  const handleFormSubmitted = onFormSubmitted ?? (() => {});
   const [showApplication, setShowApplication] = useState(false);
 
   const visaDetails = {
@@ -49,18 +54,25 @@ export function SchengenVisaPage({ onBack, onFormSubmitted }: SchengenVisaPagePr
         visaPrice={{ usd: visaDetails.processingFee, naira: visaDetails.processingFee }}
         requirements={visaDetails.requirements}
         onBack={() => setShowApplication(false)}
-        onFormSubmitted={onFormSubmitted}
+        onFormSubmitted={handleFormSubmitted}
       />
     );
   }
 
   return (
+    <>
+      <SEO
+        title="Schengen Visa — Libragold Group"
+        description="Apply for a Schengen visa with Libragold Group. Access 26 European countries with 6-month multiple entry visa."
+        canonical="/visas/schengen"
+        keywords="Schengen visa Nigeria, Europe visa, Schengen visa processing, 26 countries visa"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20">
       {/* Back Button - Fixed below navbar */}
       <div className="bg-white shadow-sm border-b sticky top-20 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
-            onClick={onBack}
+            onClick={handleBack}
             className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#D4AF37] bg-gray-100 hover:bg-gray-200 rounded-full transition-all"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -72,8 +84,8 @@ export function SchengenVisaPage({ onBack, onFormSubmitted }: SchengenVisaPagePr
       {/* Hero Section */}
       <div className="relative overflow-hidden py-20">
         <div className="absolute inset-0">
-          <img 
-            src="/Images/Hero Section/Diverse International Students With Diplomas Celebrating Graduation.jpeg" 
+          <img
+            src="/Images/Hero Section/Diverse International Students With Diplomas Celebrating Graduation.jpeg"
             alt="Schengen Visa" 
             className="w-full h-full object-cover opacity-60"
           />
@@ -226,5 +238,6 @@ export function SchengenVisaPage({ onBack, onFormSubmitted }: SchengenVisaPagePr
         </div>
       </div>
     </div>
+    </>
   );
 }

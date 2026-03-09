@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, User, FileText, CreditCard } from 'lucide-react';
-import { WEB3FORMS_KEY } from '../config';
+import { apiService } from '../services/api';
 
 interface TourBookingFormProps {
   tour: {
@@ -57,7 +57,27 @@ export function TourBookingForm({ tour, onFormSubmitted, onBack }: TourBookingFo
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4));
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
+  async function submitToBackend() {
+    try {
+      await apiService.createBooking({
+        service: 'Tour',
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone,
+        referralCode: formData.referralCode || undefined,
+        details: {
+          tourName: tour.name,
+          destination: tour.name,
+          travelDate: formData.travelDate,
+          numberOfTravelers: formData.numberOfTravelers,
+          passportNumber: formData.passportNumber,
+        },
+      });
+    } catch { /* non-fatal */ }
+  }
+
   const handleSubmit = () => {
+    submitToBackend();
     const bookingData = {
       tour,
       personalData: formData,

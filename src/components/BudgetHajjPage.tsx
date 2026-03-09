@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import { PilgrimageBookingForm } from './PilgrimageBookingForm';
+import { SEO } from './SEO';
 
 interface BudgetHajjPageProps {
   onBack: () => void;
@@ -59,6 +60,13 @@ export function BudgetHajjPage({ onBack, onFormSubmitted }: BudgetHajjPageProps)
   }
 
   return (
+    <>
+      <SEO
+        title="Budget Hajj Package — Libragold Group"
+        description="Affordable Hajj packages for Nigerian pilgrims. Experience the blessed pilgrimage to Makkah with Libragold Group's budget-friendly Hajj plans."
+        canonical="/pilgrimages/hajj/budget"
+        keywords="budget Hajj package, affordable Hajj Nigeria, Hajj 2026, cheap Hajj package"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -157,5 +165,6 @@ export function BudgetHajjPage({ onBack, onFormSubmitted }: BudgetHajjPageProps)
         </div>
       </div>
     </div>
+    </>
   );
 }

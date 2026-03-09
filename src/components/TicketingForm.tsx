@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plane, Calendar, Users, MapPin, ArrowRight, CheckCircle, Clock, Globe, User, Plus, X, Star } from 'lucide-react';
 import { WEB3FORMS_KEY } from '../config';
 import { apiService } from '../services/api';
+import { SEO } from './SEO';
 
 interface TicketingFormProps {
   onFormSubmitted?: (details?: any) => void;
@@ -136,6 +137,13 @@ export function TicketingForm({ onFormSubmitted }: TicketingFormProps) {
   ];
 
   return (
+    <>
+      <SEO
+        title="Flight Ticketing — Libragold Group"
+        description="Book domestic and international flights with Libragold Group. Competitive prices, multiple airlines and seamless booking for all destinations."
+        canonical="/ticketing"
+        keywords="flight booking Nigeria, airline tickets Nigeria, Libragold ticketing, international flights Nigeria"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       {/* Success Modal */}
       <AnimatePresence>
@@ -497,5 +505,6 @@ export function TicketingForm({ onFormSubmitted }: TicketingFormProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }

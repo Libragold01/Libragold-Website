@@ -29,8 +29,6 @@ class LotusPaymentService {
   private baseURL = 'https://partnerhub.lotusbank.com/api/v1';
   private publicKey = 'live_7a53461f576ef1c045c61db0918826882a7a3211c0703499a9d95286110cce43e877bf89c4081b0746fa50a0971e8cfapb';
   private secretKey = 'live_1d72abae39c0b5b81ed8bf3f6b0d4ef48118a27cda9a729de4e2e1a8cd2f087a2eba536d9b9175841ff0d7ae206f20141773007718614sk';
-  private webhookUrl = window.location.origin + '/api/webhook/lotus';
-
   async initializePayment(paymentData: PaymentRequest): Promise<PaymentResponse> {
     try {
       const endpoint = `${this.baseURL}/checkout/initialize`;

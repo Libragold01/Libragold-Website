@@ -1,9 +1,9 @@
-import React from 'react';
+import { type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
-  children: React.ReactNode;
+  children: ReactNode;
 }
 export function Button({
   variant = 'primary',
@@ -23,11 +23,9 @@ export function Button({
     md: 'px-6 py-3 text-base',
     lg: 'px-8 py-4 text-lg'
   };
-  return <motion.button whileHover={{
-    scale: 1.02
-  }} whileTap={{
-    scale: 0.98
-  }} className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>
-      {children}
-    </motion.button>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+    className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`} {...props as any}>
+    {children}
+  </motion.button>;
 }

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PilgrimageBookingForm } from './PilgrimageBookingForm';
+import { SEO } from './SEO';
 
 interface HajjPackagePageProps {
   packageName?: string;
@@ -203,6 +204,13 @@ export function HajjPackagePage({ packageName, onBack, onFormSubmitted }: HajjPa
   }
 
   return (
+    <>
+      <SEO
+        title="Hajj Package — Libragold Group"
+        description="Premium Hajj packages for 2027 with Libragold Group. All-inclusive packages including flights, accommodation, transport, meals and guided religious activities."
+        canonical="/pilgrimages/hajj-packages"
+        keywords="Hajj package 2027, Hajj Nigeria, budget Hajj, VIP Hajj, executive Hajj, Hajj accommodation"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20">
       <div className="relative overflow-hidden py-16 sm:py-32">
         <div className="absolute inset-0">
@@ -299,5 +307,6 @@ export function HajjPackagePage({ packageName, onBack, onFormSubmitted }: HajjPa
         </div>
       </div>
     </div>
+    </>
   );
 }

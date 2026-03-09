@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, ArrowRight, Crown, MapPin, FileText, Sparkles, Star, Globe } from 'lucide-react';
 import { BlogDetailPage } from './BlogDetailPage';

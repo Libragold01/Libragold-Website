@@ -1,8 +1,16 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
+import { SEO } from './SEO';
 
 export function PrivacyPage() {
   return (
+    <>
+      <SEO
+        title="Privacy Policy — Libragold Group"
+        description="Privacy policy for Libragold Group. Learn how we collect, use and protect your personal information."
+        canonical="/privacy"
+        keywords="Libragold privacy policy, data protection, personal information"
+      />
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-4 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -52,5 +60,6 @@ export function PrivacyPage() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

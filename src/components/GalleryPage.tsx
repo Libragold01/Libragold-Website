@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FilterTabs } from './gallery/FilterTabs';
 import { GalleryCard } from './gallery/GalleryCard';
 import { ViewToggle } from './gallery/ViewToggle';
+import { SEO } from './SEO';
 
 interface GalleryPageProps {
   onFormSubmitted?: (details?: any) => void;
 }
 
-export function GalleryPage({ onFormSubmitted }: GalleryPageProps) {
+export function GalleryPage({ onFormSubmitted: _onFormSubmitted }: GalleryPageProps) {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   const [view, setView] = useState<'grid' | 'masonry'>('grid');
@@ -40,6 +41,13 @@ export function GalleryPage({ onFormSubmitted }: GalleryPageProps) {
   const filteredItems = selectedCategory === 'All' ? galleryItems : galleryItems.filter(item => item.category === selectedCategory);
 
   return (
+    <>
+      <SEO
+        title="Gallery — Libragold Group"
+        description="Browse our photo gallery of past pilgrimages, Umrah journeys, tours and travel experiences with Libragold Group."
+        canonical="/gallery"
+        keywords="Libragold gallery, Umrah photos, Hajj photos, travel photos Nigeria, pilgrimage gallery"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       {/* Hero Section */}
       <div className="relative overflow-hidden py-32">
@@ -125,5 +133,6 @@ export function GalleryPage({ onFormSubmitted }: GalleryPageProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }

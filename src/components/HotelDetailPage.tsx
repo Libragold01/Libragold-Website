@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Star, MapPin, Wifi, Car, Coffee, Utensils, Dumbbell, Waves, ArrowLeft, Users, Bed } from 'lucide-react';
+import { Star, MapPin, Wifi, Car, Coffee, Utensils, Dumbbell, Waves, ArrowLeft } from 'lucide-react';
 import { HotelBookingForm } from './HotelBookingForm';
 import { SEO } from './SEO';
 
@@ -197,7 +197,7 @@ export function HotelDetailPage() {
   const [selectedPersons, setSelectedPersons] = useState<{[key: string]: number}>({});
   const [selectedRoomType, setSelectedRoomType] = useState('');
   const [showBookingForm, setShowBookingForm] = useState(false);
-  const [bookingData, setBookingData] = useState({
+  const [bookingData] = useState({
     checkIn: '',
     checkOut: '',
     guests: '1 Guest'
@@ -221,8 +221,6 @@ export function HotelDetailPage() {
     );
   }
 
-  // Currency symbol based on hotel currency
-  const currencySymbol = hotel.currency === 'NGN' ? '₦' : '$';
   const conversionRate = 1510; // USD to NGN
 
   // Format price based on hotel's currency
@@ -303,7 +301,7 @@ export function HotelDetailPage() {
     setShowBookingForm(true);
   };
 
-  const handleBookingComplete = (details?: any) => {
+  const handleBookingComplete = (_details?: any) => {
     // Navigate to home or show success
     navigate('/');
   };

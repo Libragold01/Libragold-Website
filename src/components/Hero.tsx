@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowDown, Sparkles } from 'lucide-react';
 const heroImages = ['/Images/Hero Section/Canada Job Visa_ Pathways, Eligibility & Application Process.jpeg', '/Images/Hero Section/Diverse International Students With Diplomas Celebrating Graduation.jpeg', '/Images/Hero Section/download (18).jpeg', '/Images/Hero Section/The Lush and Luxurious Sanya EDITION on Hainan Island.jpeg', '/Images/Hero Section/makkah-pilgrimage.jpeg'];

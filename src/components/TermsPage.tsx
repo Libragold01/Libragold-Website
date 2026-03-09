@@ -1,8 +1,16 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
+import { SEO } from './SEO';
 
 export function TermsPage() {
   return (
+    <>
+      <SEO
+        title="Terms & Conditions — Libragold Group"
+        description="Terms and conditions for using Libragold Group's travel and pilgrimage services."
+        canonical="/terms"
+        keywords="Libragold terms and conditions, travel terms, booking terms"
+      />
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-4 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -58,5 +66,6 @@ export function TermsPage() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

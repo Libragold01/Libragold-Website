@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Briefcase, CheckCircle, Copy, ArrowLeft, Loader, Users, DollarSign, Layers } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { WEB3FORMS_KEY, LWA_COUNTER_KEY } from '../config';
+import { SEO } from './SEO';
 
 // ─── Referral code generator ─────────────────────────────────────────────────
 // Uses localStorage to maintain a per-device sequential counter.
@@ -143,6 +144,13 @@ export function LWAForm() {
   // ─── Registration Form ──────────────────────────────────────────────────────
 
   return (
+    <>
+      <SEO
+        title="Become a Libragold Ambassador — Libragold Group"
+        description="Join the Libragold Worldwide Ambassadors (LWA) programme. Earn commissions by referring clients to Libragold Group's travel and pilgrimage services."
+        canonical="/lwa"
+        keywords="Libragold ambassador, LWA programme, referral programme Nigeria, earn commission travel"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 pt-20">
       {/* Back button */}
       <div className="bg-black/40 border-b border-white/10 sticky top-20 z-40 backdrop-blur-sm">
@@ -342,5 +350,6 @@ export function LWAForm() {
         </div>
       </div>
     </div>
+    </>
   );
 }

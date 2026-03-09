@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PilgrimageBookingForm } from './PilgrimageBookingForm';
+import { SEO } from './SEO';
 
 interface DecemberUmrahPageProps {
   onBack?: () => void;
@@ -92,6 +93,13 @@ export function DecemberUmrahPage({ onBack, onFormSubmitted }: DecemberUmrahPage
   }
 
   return (
+    <>
+      <SEO
+        title="December Umrah Package — Libragold Group"
+        description="Book your December Umrah package with Libragold Group. Affordable packages with flights, hotels, and guided spiritual journey to Makkah and Medina."
+        canonical="/pilgrimages/december-umrah"
+        keywords="December Umrah, Umrah December 2025, Umrah Nigeria, Qatar Airways Umrah"
+      />
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20">
       <div className="relative overflow-hidden py-16 sm:py-32">
         <div className="absolute inset-0">
@@ -168,8 +176,7 @@ export function DecemberUmrahPage({ onBack, onFormSubmitted }: DecemberUmrahPage
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-lg font-bold text-[#D4AF37]">{priceOption.usd}</div>
-                            <div className="text-sm text-gray-600">{priceOption.naira}</div>
+                            <div className="text-lg font-bold text-[#D4AF37]">{priceOption.naira}</div>
                           </div>
                         </label>
                       ))}
@@ -270,5 +277,6 @@ export function DecemberUmrahPage({ onBack, onFormSubmitted }: DecemberUmrahPage
         </div>
       </div>
     </div>
+    </>
   );
 }
