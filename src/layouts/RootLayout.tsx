@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { PageLayout } from './PageLayout';
+import { WhatsAppButton } from '../components/WhatsAppButton';
 
 function LoadingSpinner() {
   return (
@@ -27,6 +28,7 @@ export function RootLayout() {
         </AnimatePresence>
       </Suspense>
       <Footer />
+      <WhatsAppButton />
     </div>
   );
 }

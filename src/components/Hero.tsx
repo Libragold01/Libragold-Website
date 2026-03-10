@@ -32,7 +32,7 @@ export function Hero({ onExploreDestinations, onBookNow }: HeroProps) {
       }} transition={{
         duration: 1.5
       }} className="absolute inset-0">
-            <img src={image} alt="Luxury destination" className="w-full h-full object-cover" />
+            <img src={image} alt="Luxury destination" className="w-full h-full object-cover" loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : 'low'} />
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
           </motion.div>)}
       </motion.div>

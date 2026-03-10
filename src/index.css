@@ -102,4 +102,31 @@
   img {
     image-rendering: -webkit-optimize-contrast;
   }
+
+  /* WhatsApp button pulse rings */
+  .animate-whatsapp-ping {
+    animation: whatsapp-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes whatsapp-ping {
+    0% { transform: scale(1); opacity: 0.4; }
+    70% { transform: scale(2.2); opacity: 0; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  /* Shimmer skeleton loading */
+  .shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
 }
