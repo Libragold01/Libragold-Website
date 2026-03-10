@@ -168,24 +168,33 @@ export function Testimonials() {
         </div>
 
         {/* Stats — clean row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-14 pt-10 border-t border-gray-200"
-        >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-14 pt-10 border-t border-gray-200">
           {[
             { value: '5,000+', label: 'Travelers Served' },
             { value: '28+', label: 'Years in Business' },
             { value: '50+', label: 'Destinations' },
             { value: '24/7', label: 'Customer Support' },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">{stat.value}</p>
+          ].map((stat, idx) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.1, duration: 0.5 }}
+              className="text-center group"
+            >
+              <motion.p
+                whileInView={{ scale: [0.8, 1.05, 1] }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 + 0.2, duration: 0.5, ease: 'easeOut' }}
+                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1 group-hover:text-[#D4AF37] transition-colors duration-300"
+              >
+                {stat.value}
+              </motion.p>
               <p className="text-gray-500 text-sm">{stat.label}</p>
-            </div>
+            </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

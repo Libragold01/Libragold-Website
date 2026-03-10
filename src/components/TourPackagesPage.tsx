@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, MapPin, Star, Loader } from 'lucide-react';
+import { ArrowRight, MapPin, Star } from 'lucide-react';
 import { TourDetailPage } from './TourDetailPage';
 import { TourFormPage } from './TourFormPage';
 import { TourPaymentPage } from './TourPaymentPage';
@@ -189,8 +189,25 @@ export function TourPackagesPage({ onFormSubmitted }: TourPackagesPageProps) {
           </motion.div>
 
           {loading && (
-            <div className="flex justify-center items-center py-20">
-              <Loader className="w-8 h-8 animate-spin text-[#D4AF37]" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 animate-pulse">
+                  <div className="h-64 bg-gray-200" />
+                  <div className="p-6 space-y-3">
+                    <div className="flex gap-1">
+                      {Array.from({ length: 5 }).map((_, s) => <div key={s} className="w-4 h-4 bg-gray-200 rounded-full" />)}
+                    </div>
+                    <div className="h-6 bg-gray-200 rounded w-3/4" />
+                    <div className="space-y-1.5">
+                      <div className="h-3 bg-gray-100 rounded w-full" />
+                      <div className="h-3 bg-gray-100 rounded w-5/6" />
+                      <div className="h-3 bg-gray-100 rounded w-4/6" />
+                    </div>
+                    <div className="h-16 bg-gray-100 rounded-lg" />
+                    <div className="h-11 bg-gray-200 rounded-full" />
+                  </div>
+                </div>
+              ))}
             </div>
           )}
           {fetchError && (

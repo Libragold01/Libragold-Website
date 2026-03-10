@@ -289,22 +289,56 @@ export function PilgrimageBookingForm({ packageDetails, onBack, onFormSubmitted:
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Steps */}
-        <div className="flex items-center justify-center mb-12">
-          {(packageDetails.occupancy ? [0, 1, 2, 3] : [1, 2, 3]).map((step) => (
-            <div key={step} className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-xs ${
-                currentStep >= step ? 'bg-[#D4AF37] text-black' : 'bg-gray-200 text-gray-500'
-              }`}>
-                {step === 0 ? 'R' : step}
-              </div>
-              {step < 3 && (
-                <div className={`w-20 h-1 mx-4 ${
-                  currentStep > step ? 'bg-[#D4AF37]' : 'bg-gray-200'
-                }`} />
-              )}
+        {(() => {
+          const steps = packageDetails.occupancy
+            ? [
+                { id: 0, icon: <Layers className="w-4 h-4" />, label: 'Room' },
+                { id: 1, icon: <User className="w-4 h-4" />, label: 'Personal' },
+                { id: 2, icon: <FileText className="w-4 h-4" />, label: 'Passport' },
+                { id: 3, icon: <CreditCard className="w-4 h-4" />, label: 'Payment' },
+              ]
+            : [
+                { id: 1, icon: <User className="w-4 h-4" />, label: 'Personal' },
+                { id: 2, icon: <FileText className="w-4 h-4" />, label: 'Passport' },
+                { id: 3, icon: <CreditCard className="w-4 h-4" />, label: 'Payment' },
+              ];
+          return (
+            <div className="flex items-start justify-center mb-12 gap-0">
+              {steps.map((step, idx) => (
+                <div key={step.id} className="flex items-start">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <motion.div
+                      animate={{ scale: currentStep === step.id ? 1.15 : 1 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 ${
+                        currentStep > step.id
+                          ? 'bg-green-500 text-white'
+                          : currentStep === step.id
+                          ? 'bg-[#D4AF37] text-black ring-4 ring-[#D4AF37]/20'
+                          : 'bg-gray-200 text-gray-400'
+                      }`}
+                    >
+                      {currentStep > step.id ? <CheckCircle className="w-5 h-5" /> : step.icon}
+                    </motion.div>
+                    <span className={`text-xs font-medium hidden sm:block ${
+                      currentStep >= step.id ? 'text-gray-800' : 'text-gray-400'
+                    }`}>{step.label}</span>
+                  </div>
+                  {idx < steps.length - 1 && (
+                    <div className="relative mt-5 mx-2 sm:mx-3">
+                      <div className="w-12 sm:w-20 h-0.5 bg-gray-200" />
+                      <motion.div
+                        className="absolute top-0 left-0 h-0.5 bg-[#D4AF37]"
+                        animate={{ width: currentStep > step.id ? '100%' : '0%' }}
+                        transition={{ duration: 0.4, ease: 'easeInOut' }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          );
+        })()}
 
         {/* Package Summary */}
         <div className="bg-white rounded-2xl p-6 shadow-lg mb-8">

@@ -44,23 +44,28 @@ export function WhyChoose() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
-                className="flex flex-col gap-4"
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                whileHover={{ y: -4 }}
+                className="group flex flex-col gap-4 p-5 rounded-2xl border border-gray-100 hover:border-[#D4AF37]/30 hover:bg-[#D4AF37]/3 transition-all duration-300"
               >
-                <div className="w-10 h-10 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center flex-shrink-0">
+                <motion.div
+                  whileHover={{ rotate: [0, -8, 8, 0] }}
+                  transition={{ duration: 0.4 }}
+                  className="w-10 h-10 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center flex-shrink-0 group-hover:bg-[#D4AF37]/20 transition-colors"
+                >
                   <Icon className="w-5 h-5 text-[#D4AF37]" />
-                </div>
+                </motion.div>
                 <div>
-                  <h3 className="font-bold text-gray-900 mb-1 text-base">{feature.title}</h3>
+                  <h3 className="font-bold text-gray-900 mb-1 text-base group-hover:text-[#D4AF37] transition-colors duration-300">{feature.title}</h3>
                   <p className="text-gray-500 text-sm leading-relaxed">{feature.description}</p>
                 </div>
               </motion.div>

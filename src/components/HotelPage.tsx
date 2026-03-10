@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Star, MapPin, ArrowRight, Loader } from 'lucide-react';
+import { Star, MapPin, ArrowRight } from 'lucide-react';
 import { SEO } from './SEO';
 import { apiService, ApiHotel, ApiRoomType } from '../services/api';
 
@@ -109,8 +109,21 @@ export function HotelPage() {
             </motion.div>
 
             {loading && (
-              <div className="flex justify-center items-center py-20">
-                <Loader className="w-8 h-8 animate-spin text-[#D4AF37]" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100 animate-pulse">
+                    <div className="h-48 sm:h-64 bg-gray-200" />
+                    <div className="p-4 sm:p-6 space-y-3">
+                      <div className="h-5 bg-gray-200 rounded w-3/4" />
+                      <div className="space-y-2">
+                        <div className="h-4 bg-gray-100 rounded w-full" />
+                        <div className="h-4 bg-gray-100 rounded w-5/6" />
+                        <div className="h-3 bg-gray-100 rounded w-1/2" />
+                      </div>
+                      <div className="h-10 bg-gray-200 rounded-full w-full mt-4" />
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
 
