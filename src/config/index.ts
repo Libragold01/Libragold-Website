@@ -17,7 +17,7 @@ export const WEB3FORMS_KEY = 'dc98498a-5066-478d-99f3-8524d9412556';
 export const USD_TO_NGN_RATE = 1510;
 
 // WhatsApp contact number for customer support links.
-export const WHATSAPP_NUMBER = '2348000000000'; // Update with real number
+export const WHATSAPP_NUMBER = '2348038176535';
 
 // LWA (Libragold Work Ambassador) referral code settings.
 // The key used in localStorage to track the sequential code counter.
