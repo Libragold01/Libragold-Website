@@ -123,6 +123,7 @@ import {
   recordPayment,
   updatePaymentStatus,
   listPayments,
+  lotusWebhook,
 } from '../controllers/paymentController';
 
 const router = Router();
@@ -197,6 +198,31 @@ const router = Router();
  *         description: Payment with this reference already exists
  */
 router.post('/', recordPayment);
+
+/**
+ * @swagger
+ * /api/payments/webhook:
+ *   post:
+ *     summary: Lotus Bank payment webhook (public — called by Lotus Bank)
+ *     description: |
+ *       Receives payment confirmation or failure events from Lotus Bank.
+ *       Automatically updates payment status and confirms the linked booking on success.
+ *       Register this URL in your Lotus Bank merchant dashboard as the webhook endpoint.
+ *     tags: [Payments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Raw Lotus Bank webhook payload
+ *     responses:
+ *       200:
+ *         description: Webhook received and processed
+ *       400:
+ *         description: Missing required fields
+ */
+router.post('/webhook', lotusWebhook);
 
 /**
  * @swagger

@@ -16,7 +16,17 @@ V10
 V11
 V12
 V13
+V14
+V15
 *.local
+
+# Environment files with secrets — never commit these
+.env
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Editor directories and files
 .vscode/*
