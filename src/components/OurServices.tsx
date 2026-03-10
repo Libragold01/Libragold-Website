@@ -105,7 +105,7 @@ export function OurServices({ onServiceClick }: OurServicesProps) {
                 </div>
 
                 <div className="absolute inset-0 flex items-center">
-                  <div className="px-8 sm:px-12 max-w-2xl">
+                  <div className="px-5 sm:px-12 max-w-2xl">
                     <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/40 flex items-center justify-center mb-4">
                       <Icon className="w-5 h-5 sm:w-7 sm:h-7 text-[#D4AF37]" />
                     </div>
@@ -115,7 +115,7 @@ export function OurServices({ onServiceClick }: OurServicesProps) {
                     <p className="text-gray-300 text-sm sm:text-base mb-5 leading-relaxed">
                       {service.description}
                     </p>
-                    <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#D4AF37] text-black font-semibold rounded-full hover:bg-[#F4E4C1] transition-colors text-sm">
+                    <button className="inline-flex items-center gap-2 px-5 min-h-[44px] py-2.5 bg-[#D4AF37] text-black font-semibold rounded-full hover:bg-[#F4E4C1] transition-colors text-sm">
                       Explore Packages
                       <ArrowRight className="w-4 h-4" />
                     </button>
@@ -170,7 +170,7 @@ export function OurServices({ onServiceClick }: OurServicesProps) {
           </div>
           <button
             onClick={() => handleServiceClick('Contact')}
-            className="whitespace-nowrap px-6 py-3 bg-[#D4AF37] text-black font-bold rounded-full hover:bg-[#F4E4C1] transition-colors text-sm"
+            className="whitespace-nowrap px-6 py-3 min-h-[44px] bg-[#D4AF37] text-black font-bold rounded-full hover:bg-[#F4E4C1] transition-colors text-sm"
           >
             Talk to Us
           </button>

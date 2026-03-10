@@ -88,7 +88,7 @@ export function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
+            className="lg:hidden flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg hover:bg-white/10 transition-colors"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -118,7 +118,7 @@ export function Header() {
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               className="lg:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-gradient-to-br from-gray-900 via-black to-gray-900 shadow-2xl z-50 overflow-hidden"
             >
               {/* Header with close button */}
@@ -128,7 +128,7 @@ export function Header() {
                 </Link>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                 >
                   <X className="w-6 h-6 text-white" />
                 </button>
