@@ -98,11 +98,24 @@ export function Payments() {
 
       {/* Content */}
       {isLoading ? (
-        <div className="flex items-center justify-center h-48">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-7 h-7 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
-            <p className="text-gray-500 text-sm">Loading payments...</p>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-pulse">
+          <div className="px-5 py-3 flex gap-4 border-b border-gray-100 bg-gray-50">
+            {['w-24', 'w-24', 'w-32', 'w-20', 'w-16', 'w-16', 'w-20', 'w-16', 'w-24'].map((w, i) => (
+              <div key={i} className={`h-3 ${w} bg-gray-200 rounded`} />
+            ))}
           </div>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="px-5 py-4 flex gap-4 border-b border-gray-50 items-center">
+              <div className="h-4 w-24 bg-gray-200 rounded" />
+              <div className="h-4 w-24 bg-gray-100 rounded" />
+              <div className="h-4 w-32 bg-gray-100 rounded" />
+              <div className="h-5 w-20 bg-gray-100 rounded-full" />
+              <div className="h-4 w-20 bg-gray-200 rounded" />
+              <div className="h-4 w-16 bg-gray-100 rounded ml-auto" />
+              <div className="h-5 w-16 bg-gray-200 rounded-full" />
+              <div className="h-4 w-24 bg-gray-100 rounded" />
+            </div>
+          ))}
         </div>
       ) : error ? (
         <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-6 text-center">

@@ -4,11 +4,12 @@ import {
   Menu, X, HeartHandshake, Map, Building2, FileCheck, ChevronDown, ChevronLeft,
   ShieldCheck, UserCog,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { dashboardApi } from '../lib/api';
 
-interface NavItem { to: string; icon: React.ElementType; label: string; superAdminOnly?: boolean; }
+interface NavItem { to: string; icon: React.ElementType; label: string; superAdminOnly?: boolean; badge?: number; }
 interface NavGroup { label: string; items: NavItem[]; superAdminOnly?: boolean; }
 
 const navGroups: NavGroup[] = [
@@ -45,8 +46,8 @@ const navGroups: NavGroup[] = [
 ];
 
 function SidebarNavGroup({
-  group, onNavigate, isSuperAdmin,
-}: { group: NavGroup; onNavigate: () => void; isSuperAdmin: boolean }) {
+  group, onNavigate, isSuperAdmin, pendingCount,
+}: { group: NavGroup; onNavigate: () => void; isSuperAdmin: boolean; pendingCount: number }) {
   const [open, setOpen] = useState(true);
   const location = useLocation();
 
@@ -76,23 +77,31 @@ function SidebarNavGroup({
             transition={{ duration: 0.18, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            {visibleItems.map(({ to, icon: Icon, label }) => (
-              <NavLink
-                key={to}
-                to={to}
-                onClick={onNavigate}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 mx-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 mb-0.5 ${
-                    isActive
-                      ? 'bg-[#D4AF37] text-black shadow-md shadow-[#D4AF37]/20'
-                      : 'text-gray-400 hover:text-white hover:bg-white/[0.07]'
-                  }`
-                }
-              >
-                <Icon className="w-4 h-4 flex-shrink-0" />
-                {label}
-              </NavLink>
-            ))}
+            {visibleItems.map(({ to, icon: Icon, label }) => {
+              const showBadge = to === '/bookings' && pendingCount > 0;
+              return (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={onNavigate}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 mx-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 mb-0.5 ${
+                      isActive
+                        ? 'bg-[#D4AF37] text-black shadow-md shadow-[#D4AF37]/20'
+                        : 'text-gray-400 hover:text-white hover:bg-white/[0.07]'
+                    }`
+                  }
+                >
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="flex-1">{label}</span>
+                  {showBadge && (
+                    <span className="ml-auto min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">
+                      {pendingCount > 99 ? '99+' : pendingCount}
+                    </span>
+                  )}
+                </NavLink>
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>
@@ -100,7 +109,7 @@ function SidebarNavGroup({
   );
 }
 
-function SidebarContent({ onNavigate, onClose }: { onNavigate: () => void; onClose?: () => void }) {
+function SidebarContent({ onNavigate, onClose, pendingCount }: { onNavigate: () => void; onClose?: () => void; pendingCount: number }) {
   const { admin, isSuperAdmin, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -134,6 +143,7 @@ function SidebarContent({ onNavigate, onClose }: { onNavigate: () => void; onClo
             group={group}
             onNavigate={onNavigate}
             isSuperAdmin={isSuperAdmin}
+            pendingCount={pendingCount}
           />
         ))}
       </nav>
@@ -176,7 +186,14 @@ function SidebarContent({ onNavigate, onClose }: { onNavigate: () => void; onClo
 export function Layout() {
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const location = useLocation();
+
+  useEffect(() => {
+    dashboardApi.stats()
+      .then((data) => setPendingCount(data.bookings.byStatus.pending ?? 0))
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
@@ -187,7 +204,7 @@ export function Layout() {
         className="hidden lg:block bg-[#0f1623] flex-shrink-0 border-r border-white/[0.06] overflow-hidden"
       >
         <div className="w-60 h-full flex flex-col">
-          <SidebarContent onNavigate={() => {}} onClose={() => setDesktopCollapsed(true)} />
+          <SidebarContent onNavigate={() => {}} onClose={() => setDesktopCollapsed(true)} pendingCount={pendingCount} />
         </div>
       </motion.aside>
 
@@ -212,7 +229,7 @@ export function Layout() {
             <button onClick={() => setMobileSidebarOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white p-1 transition-colors">
               <X className="w-5 h-5" />
             </button>
-            <SidebarContent onNavigate={() => setMobileSidebarOpen(false)} />
+            <SidebarContent onNavigate={() => setMobileSidebarOpen(false)} pendingCount={pendingCount} />
           </motion.aside>
         )}
       </AnimatePresence>

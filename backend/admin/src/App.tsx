@@ -12,6 +12,7 @@ import { HotelsAdmin } from './pages/HotelsAdmin';
 import { VisaPackagesAdmin } from './pages/VisaPackagesAdmin';
 import { AdminsPage } from './pages/AdminsPage';
 import { Layout } from './components/Layout';
+import { ToastProvider } from './components/Toast';
 
 function LoadingScreen() {
   return (
@@ -68,9 +69,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }

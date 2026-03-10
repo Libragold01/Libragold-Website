@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { bookingsApi, Booking, Pagination } from '../lib/api';
 import { BookingTable } from '../components/BookingTable';
 import { StatusBadge } from '../components/StatusBadge';
+import { useToast } from '../components/Toast';
 
 const SERVICES = ['All', 'Pilgrimage', 'Hotel', 'Tour', 'Visa', 'Ticketing', 'Admission'];
 const STATUSES = ['All', 'pending', 'confirmed', 'cancelled', 'completed'];
@@ -18,6 +19,7 @@ function formatDate(dateStr: string): string {
 }
 
 export function Bookings() {
+  const { showToast } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,6 +31,7 @@ export function Bookings() {
   const [page, setPage] = useState(1);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const loadBookings = useCallback(async () => {
     setIsLoading(true);
@@ -75,26 +78,73 @@ export function Bookings() {
       if (selectedBooking?.id === id) {
         setSelectedBooking((prev) => (prev ? { ...prev, status } : null));
       }
+      showToast(`Booking status updated to "${status}"`, 'success');
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Failed to update status');
+      showToast(err instanceof Error ? err.message : 'Failed to update status', 'error');
     } finally {
       setUpdatingId(null);
+    }
+  }
+
+  async function exportCSV() {
+    setExporting(true);
+    try {
+      const data = await bookingsApi.list({
+        service: selectedService !== 'All' ? selectedService : undefined,
+        status: selectedStatus !== 'All' ? selectedStatus : undefined,
+        search: search || undefined,
+        limit: 1000,
+      });
+      const rows = data.bookings;
+      const headers = ['Ref', 'Name', 'Email', 'Phone', 'Service', 'Amount', 'Payment', 'Status', 'Referral', 'Date'];
+      const csv = [
+        headers.join(','),
+        ...rows.map((b) =>
+          [
+            b.bookingRef, b.customerName, b.email, b.phone, b.service,
+            b.amount || '', b.paymentMethod || '', b.status, b.referralCode || '',
+            new Date(b.createdAt).toLocaleDateString('en-NG'),
+          ].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')
+        ),
+      ].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `bookings-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`Exported ${rows.length} bookings`, 'success');
+    } catch {
+      showToast('Export failed. Try again.', 'error');
+    } finally {
+      setExporting(false);
     }
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Bookings</h1>
-        <p className="text-gray-500 text-sm mt-0.5">
-          Manage all customer bookings
-          {pagination && (
-            <span className="ml-2 text-[#D4AF37] font-semibold">
-              ({pagination.total} total)
-            </span>
-          )}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Bookings</h1>
+          <p className="text-gray-500 text-sm mt-0.5">
+            Manage all customer bookings
+            {pagination && (
+              <span className="ml-2 text-[#D4AF37] font-semibold">
+                ({pagination.total} total)
+              </span>
+            )}
+          </p>
+        </div>
+        <button
+          onClick={exportCSV}
+          disabled={exporting || isLoading}
+          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition disabled:opacity-50 flex-shrink-0"
+        >
+          <Download className={`w-4 h-4 ${exporting ? 'animate-bounce' : ''}`} />
+          Export CSV
+        </button>
       </div>
 
       {/* Filters */}
@@ -176,8 +226,23 @@ export function Bookings() {
             </button>
           </div>
         ) : isLoading ? (
-          <div className="flex items-center justify-center h-48">
-            <div className="w-8 h-8 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+          <div className="animate-pulse divide-y divide-gray-50">
+            <div className="px-6 py-3 flex gap-6 border-b border-gray-100 bg-gray-50">
+              {['w-24', 'w-32', 'w-28', 'w-20', 'w-16', 'w-20', 'w-20', 'w-24'].map((w, i) => (
+                <div key={i} className={`h-3 ${w} bg-gray-200 rounded`} />
+              ))}
+            </div>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="px-6 py-4 flex gap-6 items-center">
+                <div className="h-4 w-24 bg-gray-200 rounded font-mono" />
+                <div className="h-4 w-32 bg-gray-100 rounded" />
+                <div className="h-4 w-28 bg-gray-100 rounded" />
+                <div className="h-5 w-20 bg-gray-100 rounded-full" />
+                <div className="h-4 w-16 bg-gray-100 rounded" />
+                <div className="h-6 w-20 bg-gray-200 rounded-full ml-auto" />
+                <div className="h-4 w-20 bg-gray-100 rounded" />
+              </div>
+            ))}
           </div>
         ) : (
           <BookingTable

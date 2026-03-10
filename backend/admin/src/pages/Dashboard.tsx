@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import {
-  CalendarCheck, Clock, CheckCircle, Users, TrendingUp, RefreshCw,
+  CalendarCheck, Clock, CheckCircle, Users, TrendingUp, RefreshCw, CheckSquare,
+  HeartHandshake, Map, Building2, FileCheck,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { dashboardApi, DashboardStats } from '../lib/api';
 import { StatsCard } from '../components/StatsCard';
 import { StatusBadge } from '../components/StatusBadge';
@@ -26,6 +28,7 @@ function formatDate(dateStr: string): string {
 }
 
 export function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -55,10 +58,59 @@ export function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-500 text-sm">Loading dashboard...</p>
+      <div className="space-y-6 animate-pulse">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="h-7 w-32 bg-gray-200 rounded-lg" />
+            <div className="h-4 w-56 bg-gray-100 rounded" />
+          </div>
+          <div className="h-9 w-24 bg-gray-200 rounded-xl" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex gap-4">
+              <div className="w-12 h-12 bg-gray-200 rounded-xl flex-shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-20 bg-gray-100 rounded" />
+                <div className="h-8 w-12 bg-gray-200 rounded" />
+                <div className="h-3 w-16 bg-gray-100 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">
+            <div className="h-5 w-40 bg-gray-200 rounded" />
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="space-y-1.5">
+                <div className="h-3 w-24 bg-gray-100 rounded" />
+                <div className="h-2 bg-gray-100 rounded-full w-full" />
+              </div>
+            ))}
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">
+            <div className="h-5 w-40 bg-gray-200 rounded" />
+            <div className="grid grid-cols-2 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-20 bg-gray-100 rounded-xl" />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+          <div className="px-6 py-4 border-b border-gray-100">
+            <div className="h-5 w-32 bg-gray-200 rounded" />
+          </div>
+          <div className="divide-y divide-gray-50">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="px-6 py-4 flex gap-6">
+                <div className="h-4 w-24 bg-gray-200 rounded" />
+                <div className="h-4 w-32 bg-gray-100 rounded" />
+                <div className="h-4 w-20 bg-gray-100 rounded" />
+                <div className="h-4 w-16 bg-gray-100 rounded ml-auto" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -100,12 +152,34 @@ export function Dashboard() {
         </button>
       </div>
 
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'Pilgrimages', icon: HeartHandshake, to: '/pilgrimages', color: 'bg-emerald-50 border-emerald-100 text-emerald-700 hover:bg-emerald-100' },
+          { label: 'Tours', icon: Map, to: '/tours', color: 'bg-purple-50 border-purple-100 text-purple-700 hover:bg-purple-100' },
+          { label: 'Hotels', icon: Building2, to: '/hotels', color: 'bg-blue-50 border-blue-100 text-blue-700 hover:bg-blue-100' },
+          { label: 'Visa Packages', icon: FileCheck, to: '/visa-packages', color: 'bg-orange-50 border-orange-100 text-orange-700 hover:bg-orange-100' },
+        ].map(({ label, icon: Icon, to, color }) => (
+          <motion.button
+            key={label}
+            onClick={() => navigate(to)}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border text-sm font-semibold transition-colors ${color}`}
+          >
+            <Icon className="w-4 h-4 flex-shrink-0" />
+            {label}
+          </motion.button>
+        ))}
+      </div>
+
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
         {[
           { title: 'Total Bookings', value: stats.bookings.total, icon: CalendarCheck, color: 'gold' as const, subtitle: 'All time' },
           { title: 'Pending', value: stats.bookings.byStatus.pending ?? 0, icon: Clock, color: 'yellow' as const, subtitle: 'Awaiting action' },
           { title: 'Confirmed', value: stats.bookings.byStatus.confirmed ?? 0, icon: CheckCircle, color: 'green' as const, subtitle: 'Ready to go' },
+          { title: 'Completed', value: stats.bookings.byStatus.completed ?? 0, icon: CheckSquare, color: 'blue' as const, subtitle: 'Fulfilled' },
           { title: 'LWA Ambassadors', value: stats.ambassadors.total, icon: Users, color: 'purple' as const, subtitle: `${stats.ambassadors.active} active` },
         ].map((card, i) => (
           <motion.div
