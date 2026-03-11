@@ -78,94 +78,46 @@ export interface PaymentPayload {
 }
 
 export const apiService = {
-  /**
-   * Submit a booking to the backend. Returns bookingRef for tracking.
-   * Non-fatal — if this fails, the Web3Forms submission is still the fallback.
-   */
   createBooking: (payload: BookingPayload): Promise<BookingResult> =>
     post('/bookings', payload),
-
-  /**
-   * Register a new LWA ambassador (server-side sequential code generation).
-   */
   registerLWA: (payload: LWAPayload): Promise<LWAResult> =>
     post('/lwa/register', payload),
-
-  /**
-   * Record a payment attempt after Lotus Bank initialization.
-   */
   recordPayment: (payload: PaymentPayload): Promise<{ message: string; payment: unknown }> =>
     post('/payments', payload),
-
-  /** Fetch all active hotels */
   getHotels: (): Promise<{ hotels: ApiHotel[] }> => get('/hotels'),
-
-  /** Fetch all active tours */
   getTours: (): Promise<{ tours: ApiTour[] }> => get('/tours'),
-
-  /** Fetch all active visa packages */
   getVisaPackages: (): Promise<{ packages: ApiVisaPackage[] }> => get('/visa-packages'),
+  getPilgrimages: (): Promise<{ pilgrimages: ApiPilgrimage[] }> => get('/pilgrimages'),
 };
 
-// ---- API shape types (public read) ----
-export interface ApiRoomType {
-  type: string;
-  priceUSD: number;
-  priceNGN: number;
-  capacity: number;
-}
+// ---- API shape types ----
+export interface ApiRoomType { type: string; priceUSD: number; priceNGN: number; capacity: number; }
 
 export interface ApiHotel {
-  id: number;
-  slug: string;
-  name: string;
-  location: string;
-  country: string;
-  stars: number;
-  image: string | null;
-  description: string;
-  amenities: string[];
-  roomTypes: ApiRoomType[];
-  distanceFromHaram: string | null;
-  isActive: boolean;
-  isFeatured: boolean;
-  sortOrder: number;
+  id: number; slug: string; name: string; location: string; country: string; stars: number;
+  image: string | null; description: string; amenities: string[]; roomTypes: ApiRoomType[];
+  distanceFromHaram: string | null; isActive: boolean; isFeatured: boolean; sortOrder: number;
 }
 
 export interface ApiTour {
-  id: number;
-  slug: string;
-  title: string;
-  destination: string;
-  country: string;
-  category: string;
-  duration: string;
-  image: string | null;
-  description: string;
-  highlights: string[];
-  includes: string[];
-  priceUSD: number;
-  priceNGN: number;
-  departureDate: string | null;
-  maxGroupSize: number | null;
-  requiresVisa: boolean;
-  isActive: boolean;
-  isFeatured: boolean;
-  sortOrder: number;
+  id: number; slug: string; title: string; destination: string; country: string; category: string;
+  duration: string; image: string | null; description: string; highlights: string[]; includes: string[];
+  priceUSD: number; priceNGN: number; departureDate: string | null; maxGroupSize: number | null;
+  requiresVisa: boolean; isActive: boolean; isFeatured: boolean; sortOrder: number;
 }
 
 export interface ApiVisaPackage {
-  id: number;
-  slug: string;
-  country: string;
-  visaType: string;
-  priceUSD: number;
-  priceNGN: number;
-  processingDays: number;
-  description: string;
-  requirements: string[];
-  features: string[];
-  isActive: boolean;
-  isFeatured: boolean;
-  sortOrder: number;
+  id: number; slug: string; name: string; country: string; flag: string | null;
+  image: string | null; priceUSD: number; priceNGN: number; processingTime: string;
+  validity: string | null; requirements: string[]; description: string;
+  isActive: boolean; isFeatured: boolean; sortOrder: number;
+}
+
+export interface ApiOccupancyOption { type: string; priceNGN: number; }
+
+export interface ApiPilgrimage {
+  id: number; slug: string; title: string; type: string; category: string;
+  season: string | null; year: number | null; duration: string; image: string | null;
+  description: string; features: string[]; occupancyOptions: ApiOccupancyOption[];
+  priceFromNGN: number; priceFromUSD: number; isActive: boolean; isFeatured: boolean; sortOrder: number;
 }

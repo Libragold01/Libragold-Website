@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   build: {
-    outDir: 'V15',
+    outDir: 'V16',
     emptyOutDir: true,
     rollupOptions: {
       output: {

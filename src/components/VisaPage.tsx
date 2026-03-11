@@ -1,55 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle, Globe, Users, Briefcase, GraduationCap, Clock } from 'lucide-react';
+import { ArrowRight, CheckCircle, Globe, Users, Briefcase, GraduationCap } from 'lucide-react';
+import { apiService, ApiVisaPackage } from '../services/api';
 import { SEO } from './SEO';
+
+function fmtNaira(n: number): string {
+  const m = n / 1_000_000;
+  return `₦${parseFloat(m.toFixed(3))}M`;
+}
+
+function toNavSlug(p: ApiVisaPackage): string {
+  const c = p.country.toLowerCase();
+  if (c.includes('saudi')) return 'saudi';
+  if (c.includes('emirates') || c.includes('uae')) return 'uae';
+  if (c.includes('schengen') || c.includes('europe')) return 'schengen';
+  if (c.includes('qatar')) return 'qatar';
+  return p.slug;
+}
+
+interface LocalVisa {
+  name: string;
+  slug: string;
+  image: string;
+  description: string;
+  price: { usd: string; naira: string };
+  features: string[];
+}
+
+function apiToVisa(p: ApiVisaPackage): LocalVisa {
+  return {
+    name: p.name,
+    slug: toNavSlug(p),
+    image: p.image || '/Images/Hero Section/makkah-pilgrimage.jpeg',
+    description: p.description,
+    price: {
+      usd: p.priceUSD > 0 ? '$' + p.priceUSD : 'From',
+      naira: p.priceNGN > 0 ? fmtNaira(p.priceNGN) : '',
+    },
+    features: p.requirements.slice(0, 4),
+  };
+}
 
 export function VisaPage() {
   const navigate = useNavigate();
-  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [visaTypes, setVisaTypes] = useState<LocalVisa[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const visaTypes = [
-    {
-      name: 'UAE Visa',
-      slug: 'uae',
-      image: '/Images/Hero Section/The Lush and Luxurious Sanya EDITION on Hainan Island.jpeg',
-      description: '96 hours transit visa for Emirates Airline passengers',
-      price: { usd: '₦200,000', naira: '₦200,000' },
-      features: ['96-hour transit visa', 'Valid for 4 nights', 'Emirates Airline required', '5 working days processing']
-    },
-    {
-      name: 'Saudi Visa',
-      slug: 'saudi',
-      image: '/Images/Hero Section/makkah-pilgrimage.jpeg',
-      description: 'Quick Umrah, Tourist, and Regular Umrah visa services for Saudi Arabia',
-      price: { usd: 'From', naira: '₦850,000' },
-      features: ['Quick Umrah Visa', 'Tourist Visa (90 days)', 'Regular Umrah Visa', 'Fast processing']
-    },
-    {
-      name: 'Schengen Visa',
-      slug: 'schengen',
-      image: '/Images/Hero Section/Diverse International Students With Diplomas Celebrating Graduation.jpeg',
-      description: 'Access to 26 European countries with 6-month validity',
-      price: { usd: '$550', naira: '₦200,000' },
-      features: ['6-month validity', '26 European countries', '15 working days', 'Multiple entry']
-    },
-    {
-      name: 'Qatar Visa',
-      slug: 'qatar',
-      image: '/Images/Hero Section/download (18).jpeg',
-      description: 'Complete visa package with hotel, flight and transfers',
-      price: { usd: '$750', naira: '$750' },
-      features: ['Visa processing', 'Hotel booking included', 'Flight tickets included', 'Airport transfers included']
-    },
-    {
-      name: 'Global Talent Visa',
-      slug: 'global-talent',
-      image: '/Images/Hero Section/Canada Job Visa_ Pathways, Eligibility & Application Process.jpeg',
-      description: 'Specialized visa for skilled professionals and talents',
-      price: { usd: 'Coming Soon', naira: '' },
-      features: ['Tech professionals', 'Healthcare workers', 'Academic researchers', 'Arts & culture']
-    }
-  ];
+  useEffect(() => {
+    apiService.getVisaPackages()
+      .then(data => {
+        const sorted = data
+          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .map(apiToVisa);
+        setVisaTypes(sorted);
+      })
+      .catch(() => setVisaTypes([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   const services = [
     {
@@ -75,15 +83,7 @@ export function VisaPage() {
   ];
 
   const handleApplyVisa = (slug: string) => {
-    if (slug === 'global-talent') {
-      setShowComingSoon(true);
-    } else {
-      navigate(`/visas/${slug}`);
-    }
-  };
-
-  const handleCloseComingSoon = () => {
-    setShowComingSoon(false);
+    navigate(`/visas/${slug}`);
   };
 
   return (
@@ -95,7 +95,6 @@ export function VisaPage() {
         keywords="visa processing, UAE visa, Saudi visa, Schengen visa, Qatar visa, travel visa, Nigeria visa services"
       />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
-        {/* Hero Section */}
         <div className="relative overflow-hidden py-20 sm:py-32">
           <div className="absolute inset-0">
             <img
@@ -140,7 +139,6 @@ export function VisaPage() {
           </div>
         </div>
 
-        {/* Services Section */}
         <div className="py-12 sm:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
@@ -180,7 +178,6 @@ export function VisaPage() {
           </div>
         </div>
 
-        {/* Visa Types Section */}
         <div className="py-12 sm:py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
@@ -195,66 +192,81 @@ export function VisaPage() {
               <p className="text-base sm:text-xl text-gray-600">Choose from our comprehensive visa processing services</p>
             </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
-              {visaTypes.map((visa, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  className="group bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
-                >
-                  <div className="relative h-48 sm:h-64 overflow-hidden">
-                    <img
-                      src={visa.image}
-                      alt={visa.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+                {[0, 1, 2, 3].map(i => (
+                  <div key={i} className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100 animate-pulse">
+                    <div className="h-48 sm:h-64 bg-gray-200"></div>
+                    <div className="p-4 sm:p-6 space-y-3">
+                      <div className="h-5 bg-gray-200 rounded w-2/3"></div>
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                      <div className="h-10 bg-gray-200 rounded-full mt-4"></div>
+                    </div>
                   </div>
-
-                  <div className="p-4 sm:p-6">
-                    <h3 className="text-base sm:text-xl font-bold text-gray-900 mb-2">{visa.name}</h3>
-                    <p className="text-gray-600 mb-3 sm:mb-4 text-xs sm:text-sm">{visa.description}</p>
-
-                    <ul className="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
-                      {visa.features.map((feature, idx) => (
-                        <li key={idx} className="text-gray-600 text-xs sm:text-sm flex items-center gap-2">
-                          <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D4AF37] flex-shrink-0" />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg">
-                      <div className="text-center">
-                        <div className="text-xl sm:text-2xl font-bold text-[#D4AF37]">{visa.price.usd}</div>
-                        {visa.price.naira && (
-                          <div className="text-base sm:text-lg text-gray-600">{visa.price.naira}</div>
-                        )}
-                        <div className="text-xs text-gray-500 mt-1">+ Service Charge</div>
-                      </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+                {visaTypes.map((visa, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -10, scale: 1.02 }}
+                    className="group bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
+                  >
+                    <div className="relative h-48 sm:h-64 overflow-hidden">
+                      <img
+                        src={visa.image}
+                        alt={visa.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                     </div>
 
-                    <motion.button
-                      onClick={() => handleApplyVisa(visa.slug)}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-[#D4AF37] to-[#F4E4C1] text-black font-semibold rounded-full hover:from-[#F4E4C1] hover:to-[#D4AF37] transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base"
-                    >
-                      Apply Now
-                      <ArrowRight className="w-4 h-4" />
-                    </motion.button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                    <div className="p-4 sm:p-6">
+                      <h3 className="text-base sm:text-xl font-bold text-gray-900 mb-2">{visa.name}</h3>
+                      <p className="text-gray-600 mb-3 sm:mb-4 text-xs sm:text-sm">{visa.description}</p>
+
+                      <ul className="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
+                        {visa.features.map((feature, idx) => (
+                          <li key={idx} className="text-gray-600 text-xs sm:text-sm flex items-center gap-2">
+                            <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D4AF37] flex-shrink-0" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                        <div className="text-center">
+                          <div className="text-xl sm:text-2xl font-bold text-[#D4AF37]">{visa.price.usd}</div>
+                          {visa.price.naira && (
+                            <div className="text-base sm:text-lg text-gray-600">{visa.price.naira}</div>
+                          )}
+                          <div className="text-xs text-gray-500 mt-1">+ Service Charge</div>
+                        </div>
+                      </div>
+
+                      <motion.button
+                        onClick={() => handleApplyVisa(visa.slug)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-[#D4AF37] to-[#F4E4C1] text-black font-semibold rounded-full hover:from-[#F4E4C1] hover:to-[#D4AF37] transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base"
+                      >
+                        Apply Now
+                        <ArrowRight className="w-4 h-4" />
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Process Section */}
         <div className="py-12 sm:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
@@ -312,35 +324,6 @@ export function VisaPage() {
             </div>
           </div>
         </div>
-
-        {/* Coming Soon Modal */}
-        {showComingSoon && (
-          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl"
-            >
-              <div className="w-16 h-16 bg-[#D4AF37]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-8 h-8 text-[#D4AF37]" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Coming Soon!</h3>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                Global Talent Visa applications will be available soon.
-                Stay tuned for updates on this exciting opportunity!
-              </p>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleCloseComingSoon}
-                className="px-6 py-3 bg-[#D4AF37] text-black font-semibold rounded-full hover:bg-[#F4E4C1] transition-colors"
-              >
-                Got it
-              </motion.button>
-            </motion.div>
-          </div>
-        )}
       </div>
     </>
   );

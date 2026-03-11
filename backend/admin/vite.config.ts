@@ -7,11 +7,11 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/api': {
-        target: 'http://localhost:3002',
+        target: 'https://libragold-website.onrender.com',
         changeOrigin: true,
       },
       '/uploads': {
-        target: 'http://localhost:3002',
+        target: 'https://libragold-website.onrender.com',
         changeOrigin: true,
       },
     },
