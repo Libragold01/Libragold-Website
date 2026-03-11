@@ -40,7 +40,7 @@ export async function getVisaPackage(req: Request, res: Response): Promise<void>
 // ─── POST /api/visa-packages ──────────────────────────────────────────────────
 export async function createVisaPackage(req: Request, res: Response): Promise<void> {
   const {
-    slug, name, country, flag, priceUSD, priceNGN,
+    slug, name, country, flag, image, priceUSD, priceNGN,
     processingTime, validity, requirements, description,
     isActive, isFeatured, sortOrder,
   } = req.body;
@@ -57,6 +57,7 @@ export async function createVisaPackage(req: Request, res: Response): Promise<vo
         name,
         country,
         flag:           flag        || null,
+        image:          image       || null,
         priceUSD:       parseFloat(priceUSD || 0),
         priceNGN:       parseFloat(priceNGN),
         processingTime,
@@ -88,7 +89,7 @@ export async function updateVisaPackage(req: Request, res: Response): Promise<vo
   }
 
   const {
-    slug, name, country, flag, priceUSD, priceNGN,
+    slug, name, country, flag, image, priceUSD, priceNGN,
     processingTime, validity, requirements, description,
     isActive, isFeatured, sortOrder,
   } = req.body;
@@ -101,6 +102,7 @@ export async function updateVisaPackage(req: Request, res: Response): Promise<vo
         ...(name           && { name }),
         ...(country        && { country }),
         ...(flag           !== undefined && { flag }),
+        ...(image          !== undefined && { image }),
         ...(priceUSD       !== undefined && { priceUSD: parseFloat(priceUSD) }),
         ...(priceNGN       !== undefined && { priceNGN: parseFloat(priceNGN) }),
         ...(processingTime && { processingTime }),
