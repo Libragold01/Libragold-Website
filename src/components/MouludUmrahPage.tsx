@@ -40,8 +40,8 @@ export function MouludUmrahPage({ onBack, onFormSubmitted }: MouludUmrahPageProp
 
   useEffect(() => {
     apiService.getPilgrimages()
-      .then(data => {
-        const filtered = data
+      .then(({ pilgrimages }) => {
+        const filtered = pilgrimages
           .filter(p => p.season === 'Moulud')
           .sort((a, b) => a.sortOrder - b.sortOrder)
           .map(apiToPkg);

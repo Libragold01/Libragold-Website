@@ -53,8 +53,8 @@ export function DecemberUmrahPage({ onBack, onFormSubmitted }: DecemberUmrahPage
 
   useEffect(() => {
     apiService.getPilgrimages()
-      .then(data => {
-        const filtered = data
+      .then(({ pilgrimages }) => {
+        const filtered = pilgrimages
           .filter(p => p.season === 'December')
           .sort((a, b) => a.sortOrder - b.sortOrder)
           .map(apiToPkg);

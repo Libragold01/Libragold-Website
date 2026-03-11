@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Star, MapPin, ArrowRight } from 'lucide-react';
 import { SEO } from './SEO';
-import { apiService, ApiHotel, ApiRoomType } from '../services/api';
+import { apiService, ApiHotel, ApiRoomType, resolveImage } from '../services/api';
 
 function formatPrice(rt: ApiRoomType): string {
   if (rt.priceNGN > 0) return `₦${rt.priceNGN.toLocaleString()}`;
@@ -154,7 +154,7 @@ export function HotelPage() {
                     >
                       <div className="relative h-48 sm:h-64 overflow-hidden">
                         <img
-                          src={hotel.image || '/Images/Hotels/placeholder.jpg'}
+                          src={resolveImage(hotel.image, '/Images/Hotels/placeholder.jpg')}
                           alt={hotel.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Globe, Users, Briefcase, GraduationCap } from 'lucide-react';
-import { apiService, ApiVisaPackage } from '../services/api';
+import { apiService, ApiVisaPackage, resolveImage } from '../services/api';
 import { SEO } from './SEO';
 
 function fmtNaira(n: number): string {
@@ -32,7 +32,7 @@ function apiToVisa(p: ApiVisaPackage): LocalVisa {
   return {
     name: p.name,
     slug: toNavSlug(p),
-    image: p.image || '/Images/Hero Section/makkah-pilgrimage.jpeg',
+    image: resolveImage(p.image, '/Images/Hero Section/makkah-pilgrimage.jpeg'),
     description: p.description,
     price: {
       usd: p.priceUSD > 0 ? '$' + p.priceUSD : 'From',

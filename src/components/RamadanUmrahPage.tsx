@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, MapPin, Calendar, Users, Check, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PilgrimageBookingForm } from './PilgrimageBookingForm';
-import { apiService, ApiPilgrimage } from '../services/api';
+import { apiService, ApiPilgrimage, resolveImage } from '../services/api';
 import type { SelectedBookingPackage } from '../data/types';
 import { SEO } from './SEO';
 
@@ -39,7 +39,7 @@ function apiToPkg(p: ApiPilgrimage): LocalPackage {
   return {
     name: p.title,
     duration: p.duration,
-    image: p.image || '/Images/Hero Section/makkah-pilgrimage.jpeg',
+    image: resolveImage(p.image, '/Images/Hero Section/makkah-pilgrimage.jpeg'),
     description: p.description,
     features: p.features,
     pricing,
@@ -56,8 +56,8 @@ export function RamadanUmrahPage({ onBack, onFormSubmitted }: RamadanUmrahPagePr
 
   useEffect(() => {
     apiService.getPilgrimages()
-      .then(data => {
-        const filtered = data
+      .then(({ pilgrimages }) => {
+        const filtered = pilgrimages
           .filter(p => p.season === 'Ramadan' && p.type === 'Umrah')
           .sort((a, b) => a.sortOrder - b.sortOrder)
           .map(apiToPkg);

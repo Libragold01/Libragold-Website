@@ -2,6 +2,14 @@
 // All booking forms and LWA registrations post here first, Web3Forms email is a secondary notification
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
+const BACKEND_ORIGIN = BASE_URL.replace(/\/api$/, '');
+
+// Resolve API-relative image paths (e.g. /uploads/...) to full backend URL
+export function resolveImage(url: string | null | undefined, fallback: string): string {
+  if (!url) return fallback;
+  if (url.startsWith('/uploads/')) return `${BACKEND_ORIGIN}${url}`;
+  return url;
+}
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`);
@@ -85,6 +93,7 @@ export const apiService = {
   recordPayment: (payload: PaymentPayload): Promise<{ message: string; payment: unknown }> =>
     post('/payments', payload),
   getHotels: (): Promise<{ hotels: ApiHotel[] }> => get('/hotels'),
+  getHotel: (slug: string): Promise<{ hotel: ApiHotel }> => get(`/hotels/${slug}`),
   getTours: (): Promise<{ tours: ApiTour[] }> => get('/tours'),
   getVisaPackages: (): Promise<{ packages: ApiVisaPackage[] }> => get('/visa-packages'),
   getPilgrimages: (): Promise<{ pilgrimages: ApiPilgrimage[] }> => get('/pilgrimages'),

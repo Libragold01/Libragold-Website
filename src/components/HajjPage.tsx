@@ -56,8 +56,8 @@ export function HajjPage({ onBack, onFormSubmitted }: HajjPageProps) {
 
   useEffect(() => {
     apiService.getPilgrimages()
-      .then(data => {
-        const filtered = data
+      .then(({ pilgrimages }) => {
+        const filtered = pilgrimages
           .filter(p => p.type === 'Hajj')
           .sort((a, b) => a.sortOrder - b.sortOrder)
           .map(apiToPkg);

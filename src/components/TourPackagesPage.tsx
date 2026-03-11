@@ -4,7 +4,7 @@ import { ArrowRight, MapPin, Star } from 'lucide-react';
 import { TourDetailPage } from './TourDetailPage';
 import { TourFormPage } from './TourFormPage';
 import { TourPaymentPage } from './TourPaymentPage';
-import { apiService, ApiTour } from '../services/api';
+import { apiService, ApiTour, resolveImage } from '../services/api';
 import { SEO } from './SEO';
 
 function toTourShape(t: ApiTour) {
@@ -232,7 +232,7 @@ export function TourPackagesPage({ onFormSubmitted }: TourPackagesPageProps) {
               >
                 <div className="relative h-64 overflow-hidden">
                   <img
-                    src={tour.image}
+                    src={resolveImage(tour.image, '/Images/Hero Section/makkah-pilgrimage.jpeg')}
                     alt={tour.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
