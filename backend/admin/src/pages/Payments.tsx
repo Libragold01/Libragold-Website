@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CreditCard, ChevronLeft, ChevronRight, X, CheckCircle, XCircle, Clock, User, Tag, Layers, Calendar, Hash } from 'lucide-react';
 import { paymentsApi, Payment, Pagination } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
 
@@ -9,6 +9,8 @@ function formatDate(dateStr: string): string {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
@@ -18,12 +20,167 @@ function formatAmount(amount: number): string {
 
 const STATUS_OPTIONS = ['all', 'pending', 'success', 'failed'];
 
-// Map payment statuses to lwa-type badge values
 function paymentStatusToLwa(status: string): string {
   if (status === 'success') return 'active';
   if (status === 'failed') return 'suspended';
   return 'pending';
 }
+
+// ─── Payment Detail Modal ─────────────────────────────────────────────────────
+
+function PaymentDetailModal({
+  payment,
+  onClose,
+}: {
+  payment: Payment;
+  onClose: () => void;
+}) {
+  const statusIcon =
+    payment.status === 'success' ? (
+      <CheckCircle className="w-8 h-8 text-green-500" />
+    ) : payment.status === 'failed' ? (
+      <XCircle className="w-8 h-8 text-red-500" />
+    ) : (
+      <Clock className="w-8 h-8 text-amber-500" />
+    );
+
+  const statusColor =
+    payment.status === 'success'
+      ? 'bg-green-50 border-green-200'
+      : payment.status === 'failed'
+      ? 'bg-red-50 border-red-200'
+      : 'bg-amber-50 border-amber-200';
+
+  // Parse useful fields out of lotusData if present
+  const lotus = payment.lotusData as Record<string, unknown> | null;
+  const lotusRef =
+    (lotus?.data as Record<string, unknown>)?.reference ??
+    (lotus?.reference as string) ??
+    null;
+  const lotusMsg =
+    (lotus?.message as string) ??
+    (lotus?.data as Record<string, unknown>)?.message ??
+    null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+        onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      >
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        >
+          {/* Header */}
+          <div className={`flex items-center justify-between p-5 border-b ${statusColor} rounded-t-2xl`}>
+            <div className="flex items-center gap-3">
+              {statusIcon}
+              <div>
+                <p className="font-mono text-sm font-bold text-gray-800">{payment.reference}</p>
+                <p className="text-xs text-gray-500 capitalize">{payment.status} · {payment.method}</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-white/60 transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="p-5 space-y-5">
+            {/* Amount */}
+            <div className="text-center py-3 bg-gray-50 rounded-xl">
+              <div className="text-3xl font-bold text-gray-900">{formatAmount(payment.amount)}</div>
+              {payment.isInstallment && payment.installmentNumber != null && payment.installmentTotal != null && (
+                <div className="text-sm text-purple-600 font-semibold mt-1">
+                  Installment {payment.installmentNumber} of {payment.installmentTotal}
+                </div>
+              )}
+              {payment.currency && payment.currency !== 'NGN' && (
+                <div className="text-xs text-gray-400 mt-0.5">{payment.currency}</div>
+              )}
+            </div>
+
+            {/* Booking info */}
+            {payment.booking && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Booking</p>
+                <div className="bg-gray-50 rounded-xl p-4 space-y-2.5">
+                  <Row icon={<Hash className="w-4 h-4" />} label="Booking Ref" value={payment.booking.bookingRef} mono />
+                  <Row icon={<User className="w-4 h-4" />} label="Customer" value={payment.booking.customerName} />
+                  <Row icon={<Tag className="w-4 h-4" />} label="Email" value={payment.booking.email} />
+                  <Row icon={<Layers className="w-4 h-4" />} label="Service" value={payment.booking.service} />
+                </div>
+              </div>
+            )}
+
+            {/* Payment details */}
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment Details</p>
+              <div className="bg-gray-50 rounded-xl p-4 space-y-2.5">
+                <Row icon={<Hash className="w-4 h-4" />} label="Reference" value={payment.reference} mono />
+                {lotusRef && lotusRef !== payment.reference && (
+                  <Row icon={<Hash className="w-4 h-4" />} label="Lotus Ref" value={String(lotusRef)} mono />
+                )}
+                <Row icon={<CreditCard className="w-4 h-4" />} label="Method" value={payment.method} />
+                <Row icon={<Calendar className="w-4 h-4" />} label="Date" value={formatDate(payment.createdAt)} />
+                {payment.updatedAt !== payment.createdAt && (
+                  <Row icon={<Calendar className="w-4 h-4" />} label="Updated" value={formatDate(payment.updatedAt)} />
+                )}
+                {lotusMsg && (
+                  <Row icon={<CheckCircle className="w-4 h-4" />} label="Gateway Message" value={String(lotusMsg)} />
+                )}
+              </div>
+            </div>
+
+            {/* Lotus raw data — collapsed */}
+            {lotus && (
+              <details className="group">
+                <summary className="text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-gray-600 transition">
+                  Raw Gateway Response ▸
+                </summary>
+                <pre className="mt-2 bg-gray-900 text-green-400 text-xs rounded-xl p-4 overflow-x-auto max-h-48">
+                  {JSON.stringify(lotus, null, 2)}
+                </pre>
+              </details>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function Row({
+  icon,
+  label,
+  value,
+  mono = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
+  return (
+    <div className="flex items-start gap-2.5">
+      <span className="text-gray-400 mt-0.5 flex-shrink-0">{icon}</span>
+      <div className="flex-1 min-w-0">
+        <span className="text-xs text-gray-500">{label}</span>
+        <p className={`text-sm font-medium text-gray-800 break-all ${mono ? 'font-mono' : ''}`}>{value}</p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Payments Page ───────────────────────────────────────────────────────
 
 export function Payments() {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -32,6 +189,7 @@ export function Payments() {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selected, setSelected] = useState<Payment | null>(null);
 
   const loadPayments = useCallback(async () => {
     setIsLoading(true);
@@ -53,7 +211,6 @@ export function Payments() {
     loadPayments();
   }, [loadPayments]);
 
-  // Reset to page 1 when filter changes
   useEffect(() => {
     setPage(1);
   }, [statusFilter]);
@@ -94,6 +251,7 @@ export function Payments() {
             </option>
           ))}
         </select>
+        <p className="text-xs text-gray-400 ml-auto">Click any row to see full details</p>
       </div>
 
       {/* Content */}
@@ -131,38 +289,24 @@ export function Payments() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50">
-                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Reference
-                    </th>
-                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Booking Ref
-                    </th>
-                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Customer
-                    </th>
-                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Service
-                    </th>
-                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Amount
-                    </th>
-                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Method
-                    </th>
-                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Installment
-                    </th>
-                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
+                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Reference</th>
+                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Booking Ref</th>
+                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Service</th>
+                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Method</th>
+                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Installment</th>
+                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="text-left py-3 px-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {payments.map((payment) => (
-                    <tr key={payment.id} className="hover:bg-gray-50 transition-colors">
+                    <tr
+                      key={payment.id}
+                      onClick={() => setSelected(payment)}
+                      className="hover:bg-amber-50 transition-colors cursor-pointer"
+                    >
                       <td className="py-3 px-5">
                         <span className="font-mono text-xs font-semibold text-[#D4AF37]">
                           {payment.reference}
@@ -197,10 +341,7 @@ export function Payments() {
                         )}
                       </td>
                       <td className="py-3 px-5">
-                        <StatusBadge
-                          status={paymentStatusToLwa(payment.status)}
-                          type="lwa"
-                        />
+                        <StatusBadge status={paymentStatusToLwa(payment.status)} type="lwa" />
                       </td>
                       <td className="py-3 px-5 text-gray-500 text-xs whitespace-nowrap">
                         {formatDate(payment.createdAt)}
@@ -244,6 +385,11 @@ export function Payments() {
             </div>
           )}
         </>
+      )}
+
+      {/* Detail Modal */}
+      {selected && (
+        <PaymentDetailModal payment={selected} onClose={() => setSelected(null)} />
       )}
     </motion.div>
   );
