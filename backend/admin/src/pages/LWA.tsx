@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Search, X, ChevronLeft, ChevronRight, UserCheck, UserX } from 'lucide-react';
-import { lwaApi, LWARegistration, Pagination } from '../lib/api';
+import { Search, X, ChevronLeft, ChevronRight, UserCheck, UserX, ArrowLeft, Package } from 'lucide-react';
+import { lwaApi, bookingsApi, LWARegistration, Booking, Pagination } from '../lib/api';
 import { StatusBadge } from '../components/StatusBadge';
 
 function formatDate(dateStr: string): string {
@@ -10,6 +10,154 @@ function formatDate(dateStr: string): string {
     year: 'numeric',
   });
 }
+
+function formatAmount(amount: string | null | undefined): string {
+  if (!amount) return '—';
+  return amount;
+}
+
+// ─── Ambassador Detail Panel ──────────────────────────────────────────────────
+
+function AmbassadorDetail({
+  ambassador,
+  onBack,
+}: {
+  ambassador: LWARegistration;
+  onBack: () => void;
+}) {
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    setIsLoading(true);
+    bookingsApi
+      .list({ referralCode: ambassador.lwaCode, limit: 100 })
+      .then((data) => setBookings(data.bookings))
+      .catch((err: unknown) =>
+        setError(err instanceof Error ? err.message : 'Failed to load bookings')
+      )
+      .finally(() => setIsLoading(false));
+  }, [ambassador.lwaCode]);
+
+  const totalBookings = bookings.length;
+  const confirmedBookings = bookings.filter((b) => b.status === 'confirmed' || b.status === 'completed').length;
+
+  return (
+    <div className="space-y-6">
+      {/* Back button + header */}
+      <div className="flex items-center gap-4">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Ambassadors
+        </button>
+      </div>
+
+      {/* Ambassador info card */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <span className="font-mono font-bold text-[#D4AF37] text-lg">{ambassador.lwaCode}</span>
+              <StatusBadge status={ambassador.status} type="lwa" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">{ambassador.fullName}</h2>
+            <p className="text-gray-500 text-sm">{ambassador.email} · {ambassador.phone}</p>
+            <p className="text-gray-400 text-xs mt-0.5">{ambassador.city} · {ambassador.occupation}</p>
+          </div>
+          <div className="text-right text-sm text-gray-500">
+            Registered {formatDate(ambassador.createdAt)}
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-100">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-900">{totalBookings}</div>
+            <div className="text-xs text-gray-500 mt-0.5">Total Bookings</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">{confirmedBookings}</div>
+            <div className="text-xs text-gray-500 mt-0.5">Confirmed</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-amber-500">{totalBookings - confirmedBookings}</div>
+            <div className="text-xs text-gray-500 mt-0.5">Pending</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bookings table */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h3 className="font-semibold text-gray-900">Bookings using {ambassador.lwaCode}</h3>
+          <p className="text-xs text-gray-500 mt-0.5">Every customer who entered this referral code when booking</p>
+        </div>
+
+        {error ? (
+          <div className="p-6 text-center text-red-600 text-sm">{error}</div>
+        ) : isLoading ? (
+          <div className="flex items-center justify-center h-40">
+            <div className="w-8 h-8 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : bookings.length === 0 ? (
+          <div className="text-center py-16 text-gray-400">
+            <Package className="w-10 h-10 mx-auto mb-3 opacity-30" />
+            <p className="font-medium">No bookings yet</p>
+            <p className="text-sm mt-1">Bookings using code {ambassador.lwaCode} will appear here</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ref</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Service</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Payment</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {bookings.map((booking) => (
+                  <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4">
+                      <span className="font-mono text-xs text-gray-600">{booking.bookingRef}</span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="font-medium text-gray-900 text-sm">{booking.customerName}</div>
+                      <div className="text-gray-400 text-xs">{booking.email}</div>
+                    </td>
+                    <td className="py-3 px-4 hidden sm:table-cell">
+                      <span className="text-gray-700 text-xs font-medium">{booking.service}</span>
+                    </td>
+                    <td className="py-3 px-4 font-semibold text-gray-900">{formatAmount(booking.amount)}</td>
+                    <td className="py-3 px-4">
+                      <StatusBadge status={booking.status} type="booking" />
+                    </td>
+                    <td className="py-3 px-4 text-gray-500 text-xs hidden md:table-cell capitalize">
+                      {booking.paymentMethod || '—'}
+                    </td>
+                    <td className="py-3 px-4 text-gray-400 text-xs hidden lg:table-cell">
+                      {formatDate(booking.createdAt)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main LWA List ────────────────────────────────────────────────────────────
 
 export function LWA() {
   const [ambassadors, setAmbassadors] = useState<LWARegistration[]>([]);
@@ -21,6 +169,7 @@ export function LWA() {
   const [searchInput, setSearchInput] = useState('');
   const [page, setPage] = useState(1);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [selected, setSelected] = useState<LWARegistration | null>(null);
 
   const loadAmbassadors = useCallback(async () => {
     setIsLoading(true);
@@ -56,7 +205,8 @@ export function LWA() {
     setPage(1);
   }
 
-  async function handleToggleStatus(ambassador: LWARegistration) {
+  async function handleToggleStatus(e: React.MouseEvent, ambassador: LWARegistration) {
+    e.stopPropagation();
     const newStatus = ambassador.status === 'active' ? 'suspended' : 'active';
     setUpdatingId(ambassador.id);
     try {
@@ -69,6 +219,16 @@ export function LWA() {
     } finally {
       setUpdatingId(null);
     }
+  }
+
+  // Show detail view when an ambassador is selected
+  if (selected) {
+    return (
+      <AmbassadorDetail
+        ambassador={selected}
+        onBack={() => setSelected(null)}
+      />
+    );
   }
 
   return (
@@ -179,7 +339,11 @@ export function LWA() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {ambassadors.map((ambassador) => (
-                  <tr key={ambassador.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={ambassador.id}
+                    onClick={() => setSelected(ambassador)}
+                    className="hover:bg-amber-50 transition-colors cursor-pointer"
+                  >
                     <td className="py-3 px-4">
                       <span className="font-mono font-bold text-[#D4AF37] text-xs">
                         {ambassador.lwaCode}
@@ -202,7 +366,7 @@ export function LWA() {
                     </td>
                     <td className="py-3 px-4">
                       <button
-                        onClick={() => handleToggleStatus(ambassador)}
+                        onClick={(e) => handleToggleStatus(e, ambassador)}
                         disabled={updatingId === ambassador.id}
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 ${
                           ambassador.status === 'active'

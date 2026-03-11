@@ -89,15 +89,16 @@ export async function createBooking(req: Request, res: Response): Promise<void> 
 
 //GET /api/bookings 
 export async function listBookings(req: Request, res: Response): Promise<void> {
-  const { service, status, search, page = '1', limit = '50' } = req.query as Record<string, string>;
+  const { service, status, search, referralCode, page = '1', limit = '50' } = req.query as Record<string, string>;
 
   const pageNum  = Math.max(1, parseInt(page, 10));
   const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10)));
   const skip     = (pageNum - 1) * limitNum;
 
   const where: Record<string, unknown> = {};
-  if (service) where.service = service;
-  if (status)  where.status  = status;
+  if (service)      where.service      = service;
+  if (status)       where.status       = status;
+  if (referralCode) where.referralCode = referralCode.toUpperCase();
   if (search) {
     where.OR = [
       { customerName: { contains: search, mode: 'insensitive' } },

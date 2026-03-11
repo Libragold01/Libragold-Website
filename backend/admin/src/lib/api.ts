@@ -56,6 +56,7 @@ export const bookingsApi = {
     service?: string;
     status?: string;
     search?: string;
+    referralCode?: string;
     page?: number;
     limit?: number;
   }) => {
@@ -63,6 +64,7 @@ export const bookingsApi = {
     if (params?.service) qs.set('service', params.service);
     if (params?.status) qs.set('status', params.status);
     if (params?.search) qs.set('search', params.search);
+    if (params?.referralCode) qs.set('referralCode', params.referralCode);
     if (params?.page) qs.set('page', String(params.page));
     if (params?.limit) qs.set('limit', String(params.limit));
     return request<{ bookings: Booking[]; pagination: Pagination }>(
