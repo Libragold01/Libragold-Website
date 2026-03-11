@@ -366,8 +366,7 @@ export function VisaPackagesAdmin() {
     setIsLoading(true);
     setError('');
     try {
-      const params: { active?: string } = {};
-      if (activeFilter !== 'all') params.active = activeFilter;
+      const params: { active?: string } = { active: activeFilter };
       const data = await visaPackagesApi.list(params);
       setPackages(data.packages);
     } catch (err: unknown) {

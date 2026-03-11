@@ -8,7 +8,14 @@ export async function listVisaPackages(req: Request, res: Response): Promise<voi
   const { active } = req.query as Record<string, string>;
 
   const where: Record<string, unknown> = {};
-  if (active !== 'all') where.isActive = true;
+  if (active === 'all') {
+    // no filter — admin wants all packages regardless of status
+  } else if (active === 'false') {
+    where.isActive = false;
+  } else {
+    // default (no param or active=true) — public: only show active
+    where.isActive = true;
+  }
 
   try {
     const packages = await prisma.visaPackage.findMany({
