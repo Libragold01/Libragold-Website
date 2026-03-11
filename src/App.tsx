@@ -2,6 +2,10 @@ import React, { Suspense } from 'react';
 import { useRoutes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { routes } from './routes';
+import { warmupBackend } from './services/api';
+
+// Fire-and-forget: wake Render backend the moment the app loads
+warmupBackend();
 
 function LoadingSpinner() {
   return (

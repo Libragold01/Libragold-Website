@@ -4,6 +4,11 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
 const BACKEND_ORIGIN = BASE_URL.replace(/\/api$/, '');
 
+// Wake up Render backend immediately on app load (prevents cold-start delays for users)
+export function warmupBackend(): void {
+  fetch(`${BACKEND_ORIGIN}/health`, { method: 'GET' }).catch(() => {/* ignore */});
+}
+
 // Resolve API-relative image paths (e.g. /uploads/...) to full backend URL
 export function resolveImage(url: string | null | undefined, fallback: string): string {
   if (!url) return fallback;
@@ -11,11 +16,20 @@ export function resolveImage(url: string | null | undefined, fallback: string): 
   return url;
 }
 
-async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`);
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
-  return data as T;
+// Retry up to 2 times with 3s delay — handles Render cold-start timeouts
+async function get<T>(path: string, retries = 2): Promise<T> {
+  try {
+    const res = await fetch(`${BASE_URL}${path}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    return data as T;
+  } catch (err) {
+    if (retries > 0) {
+      await new Promise(r => setTimeout(r, 3000));
+      return get<T>(path, retries - 1);
+    }
+    throw err;
+  }
 }
 
 async function post<T>(path: string, body: unknown): Promise<T> {
