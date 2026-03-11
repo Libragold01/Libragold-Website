@@ -50,7 +50,7 @@ export function VisaPage() {
   useEffect(() => {
     apiService.getVisaPackages()
       .then(data => {
-        const sorted = data
+        const sorted = data.packages
           .sort((a, b) => a.sortOrder - b.sortOrder)
           .map(apiToVisa);
         setVisaTypes(sorted);
