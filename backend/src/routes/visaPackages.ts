@@ -170,7 +170,8 @@ const router = Router();
  *                       slug:           { type: string }
  *                       name:           { type: string }
  *                       country:        { type: string }
- *                       flag:           { type: string, example: "🇸🇦" }
+ *                       flag:           { type: string }
+ *                       image:          { type: string }
  *                       priceUSD:       { type: number }
  *                       priceNGN:       { type: number }
  *                       processingTime: { type: string }
@@ -179,6 +180,9 @@ const router = Router();
  *                       description:    { type: string }
  *                       isActive:       { type: boolean }
  *                       isFeatured:     { type: boolean }
+ *                       sortOrder:      { type: integer }
+ *                       createdAt:      { type: string, format: date-time }
+ *                       updatedAt:      { type: string, format: date-time }
  *       500:
  *         description: Internal server error
  */
@@ -227,6 +231,7 @@ router.get('/:slug', getVisaPackage);
  *               name:           { type: string, example: "Schengen Visa (6 Months)" }
  *               country:        { type: string, example: "Europe (Schengen Area)" }
  *               flag:           { type: string, example: "🇪🇺" }
+ *               image:          { type: string, example: "https://example.com/schengen.jpg" }
  *               priceUSD:       { type: number, example: 0 }
  *               priceNGN:       { type: number, example: 350000 }
  *               processingTime: { type: string, example: "15 working days" }
@@ -274,6 +279,7 @@ router.post('/', requireAuth, createVisaPackage);
  *               name:           { type: string }
  *               country:        { type: string }
  *               flag:           { type: string }
+ *               image:          { type: string }
  *               priceUSD:       { type: number }
  *               priceNGN:       { type: number }
  *               processingTime: { type: string }

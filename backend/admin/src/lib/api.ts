@@ -214,7 +214,7 @@ export interface Hotel {
 
 export interface VisaPackage {
   id: number; slug: string; name: string; country: string; flag: string | null;
-  priceUSD: number; priceNGN: number; processingTime: string; validity: string | null;
+  image: string | null; priceUSD: number; priceNGN: number; processingTime: string; validity: string | null;
   requirements: string[]; description: string;
   isActive: boolean; isFeatured: boolean; sortOrder: number; createdAt: string; updatedAt: string;
 }

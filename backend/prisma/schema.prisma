@@ -127,7 +127,7 @@ model VisaPackage {
   name           String
   country        String
   flag           String?  // emoji or image url
-  image          String?  // package image URL
+  image          String?
   priceUSD       Float
   priceNGN       Float
   processingTime String
