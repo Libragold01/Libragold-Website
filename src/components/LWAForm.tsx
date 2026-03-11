@@ -2,20 +2,9 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Briefcase, CheckCircle, Copy, ArrowLeft, Loader, Users, DollarSign, Layers } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { WEB3FORMS_KEY, LWA_COUNTER_KEY } from '../config';
+import { WEB3FORMS_KEY } from '../config';
+import { apiService } from '../services/api';
 import { SEO } from './SEO';
-
-// ─── Referral code generator ─────────────────────────────────────────────────
-// Uses localStorage to maintain a per-device sequential counter.
-// Each submission is also recorded via Web3Forms so the admin can track all codes.
-// The counter key lives in src/config/index.ts — changing the key there resets counters.
-
-function getNextLWACode(): string {
-  const stored = localStorage.getItem(LWA_COUNTER_KEY);
-  const next = stored ? parseInt(stored, 10) : 1;
-  localStorage.setItem(LWA_COUNTER_KEY, String(next + 1));
-  return 'LWA' + String(next).padStart(2, '0');
-}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -51,31 +40,46 @@ export function LWAForm() {
     }
     setIsSubmitting(true);
 
-    const code = getNextLWACode();
-
-    const web3FormData = new FormData();
-    web3FormData.append('access_key', WEB3FORMS_KEY);
-    web3FormData.append('subject', `New LWA Registration: ${code} — ${formData.fullName}`);
-    web3FormData.append('referralCode', code);
-    web3FormData.append('fullName', formData.fullName);
-    web3FormData.append('email', formData.email);
-    web3FormData.append('phone', formData.phone);
-    web3FormData.append('city', formData.city);
-    web3FormData.append('occupation', formData.occupation);
-    web3FormData.append('socialMedia', formData.socialMedia);
-    web3FormData.append('howYouHeard', formData.howYouHeard);
-    web3FormData.append('registrationDate', new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' }));
-
     try {
-      await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: web3FormData,
+      // Register with backend — server generates the authoritative LWA code
+      const result = await apiService.registerLWA({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        city: formData.city,
+        occupation: formData.occupation,
+        howHeard: formData.howYouHeard,
+        socialMedia: formData.socialMedia || undefined,
       });
-    } catch {
-      // Non-critical — still show the code to the user
+
+      const code = result.ambassador.lwaCode;
+
+      // Also notify via Web3Forms email (non-critical)
+      const web3FormData = new FormData();
+      web3FormData.append('access_key', WEB3FORMS_KEY);
+      web3FormData.append('subject', `New LWA Registration: ${code} — ${formData.fullName}`);
+      web3FormData.append('referralCode', code);
+      web3FormData.append('fullName', formData.fullName);
+      web3FormData.append('email', formData.email);
+      web3FormData.append('phone', formData.phone);
+      web3FormData.append('city', formData.city);
+      web3FormData.append('occupation', formData.occupation);
+      web3FormData.append('socialMedia', formData.socialMedia);
+      web3FormData.append('howYouHeard', formData.howYouHeard);
+      web3FormData.append('registrationDate', new Date().toLocaleString('en-NG', { timeZone: 'Africa/Lagos' }));
+      fetch('https://api.web3forms.com/submit', { method: 'POST', body: web3FormData }).catch(() => {});
+
+      setLwaCode(code);
+    } catch (err: unknown) {
+      // If this email already registered, surface their existing code
+      const apiErr = err as { message?: string };
+      if (apiErr?.message?.includes('already exists')) {
+        alert('This email is already registered as an ambassador. Please check your email for your original LWA code.');
+      } else {
+        alert('Registration failed. Please check your connection and try again.');
+      }
     } finally {
       setIsSubmitting(false);
-      setLwaCode(code);
     }
   };
 
