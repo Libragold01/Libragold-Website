@@ -1,26 +1,87 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, MapPin, Calendar, Users, Star, CheckCircle, ArrowRight, Crown, Sparkles, Award, Shield, Plane, Camera } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, MapPin, Calendar, Star, CheckCircle, ArrowRight, Crown, Sparkles, Award, Shield, Plane, Camera } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { apiService, ApiTour, resolveImage } from '../services/api';
+
+interface TourShape {
+  name: string;
+  duration: string;
+  price: { usd: string; naira: string };
+  image: string;
+  location: string;
+  rating: number;
+  features: string[];
+}
 
 interface TourDetailPageProps {
-  tour?: {
-    name: string;
-    duration: string;
-    price: { usd: string; naira: string };
-    image: string;
-    location: string;
-    rating: number;
-    features: string[];
-  };
+  tour?: TourShape;
   onBack?: () => void;
   onBookTour?: (packageType: string) => void;
 }
 
-export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps) {
+function apiToShape(t: ApiTour): TourShape {
+  return {
+    name: t.title,
+    duration: t.duration,
+    price: {
+      usd: t.priceUSD ? `$${t.priceUSD.toLocaleString()}` : 'Contact Us',
+      naira: t.priceNGN ? `₦${t.priceNGN.toLocaleString()}` : '',
+    },
+    image: resolveImage(t.image, '/Images/Hero Section/makkah-pilgrimage.jpeg'),
+    location: t.destination,
+    rating: 4.7,
+    features: t.highlights ?? [],
+  };
+}
+
+export function TourDetailPage({ tour: tourProp, onBack, onBookTour }: TourDetailPageProps) {
   const navigate = useNavigate();
+  const { tourId } = useParams<{ tourId: string }>();
+  const [fetchedTour, setFetchedTour] = useState<TourShape | null>(null);
+  const [loading, setLoading] = useState(!tourProp);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (tourProp) return; // prop takes priority — no need to fetch
+    if (!tourId) { setNotFound(true); setLoading(false); return; }
+    apiService.getTour(tourId)
+      .then(({ tour }) => setFetchedTour(apiToShape(tour)))
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [tourId, tourProp]);
+
   const handleBack = onBack ?? (() => navigate(-1));
   const handleBookTour = onBookTour ?? (() => {});
-  if (!tour) return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Tour not found.</p></div>;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-20">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-500 text-sm">Loading tour details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const tour = tourProp ?? fetchedTour;
+
+  if (notFound || !tour) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500 text-lg mb-4">Tour not found.</p>
+          <button onClick={() => navigate('/tours')} className="px-6 py-3 bg-[#D4AF37] text-black font-semibold rounded-full hover:bg-[#F4E4C1] transition-colors">
+            Back to Tours
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const tourImage = resolveImage(tour.image, '/Images/Hero Section/makkah-pilgrimage.jpeg');
+
   const packages = [
     {
       type: 'Standard',
@@ -36,8 +97,8 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
       gradient: 'from-[#D4AF37] to-yellow-500',
       popular: true,
       price: {
-        usd: `$${parseInt(tour.price.usd.replace('$', '').replace(',', '')) + 500}`,
-        naira: `₦${(parseInt(tour.price.naira.replace('₦', '').replace(/,/g, '')) + 755000).toLocaleString()}`
+        usd: `$${parseInt(tour.price.usd.replace('$', '').replace(/,/g, '')) + 500 || 0}`,
+        naira: tour.price.naira ? `₦${(parseInt(tour.price.naira.replace('₦', '').replace(/,/g, '')) + 755000).toLocaleString()}` : '',
       },
       features: ['4-star accommodation', 'Half board meals', 'Private tours', 'Premium transfers', 'City tours', 'Welcome dinner']
     },
@@ -47,8 +108,8 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
       gradient: 'from-purple-500 to-pink-500',
       popular: false,
       price: {
-        usd: `$${parseInt(tour.price.usd.replace('$', '').replace(',', '')) + 1000}`,
-        naira: `₦${(parseInt(tour.price.naira.replace('₦', '').replace(/,/g, '')) + 1510000).toLocaleString()}`
+        usd: `$${parseInt(tour.price.usd.replace('$', '').replace(/,/g, '')) + 1000 || 0}`,
+        naira: tour.price.naira ? `₦${(parseInt(tour.price.naira.replace('₦', '').replace(/,/g, '')) + 1510000).toLocaleString()}` : '',
       },
       features: ['5-star accommodation', 'Full board meals', 'Private guide', 'Luxury transfers', 'Exclusive experiences', 'Spa access']
     }
@@ -60,22 +121,22 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <Sparkles className="absolute top-20 left-10 w-6 h-6 text-[#D4AF37] opacity-20 animate-pulse" />
         <Star className="absolute top-40 right-20 w-4 h-4 text-yellow-400 opacity-30 animate-bounce" />
-        <Plane className="absolute bottom-32 left-20 w-8 h-8 text-[#D4AF37] opacity-20" style={{animationDuration: '4s'}} />
+        <Plane className="absolute bottom-32 left-20 w-8 h-8 text-[#D4AF37] opacity-20" />
         <Camera className="absolute top-60 left-1/4 w-5 h-5 text-yellow-500 opacity-25 animate-pulse" />
       </div>
 
       {/* Hero Section */}
       <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent z-10"></div>
-        <img src={tour.image} alt={tour.name} className="w-full h-96 object-cover" />
-        
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent z-10" />
+        <img src={tourImage} alt={tour.name} className="w-full h-96 object-cover" />
+
         <div className="absolute inset-0 z-20 flex items-center">
           <div className="max-w-6xl mx-auto px-4 w-full">
             <button onClick={handleBack} className="flex items-center gap-2 text-white/90 hover:text-white mb-6 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full transition-all">
               <ArrowLeft className="w-4 h-4" />
               Back to Tours
             </button>
-            
+
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="text-white">
               <div className="flex items-center gap-2 mb-3">
                 {Array.from({ length: 5 }, (_, i) => (
@@ -83,11 +144,11 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
                 ))}
                 <span className="text-white/90 font-medium">({tour.rating}) • Verified Tour</span>
               </div>
-              
+
               <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white to-[#D4AF37] bg-clip-text text-transparent">
                 {tour.name}
               </h1>
-              
+
               <div className="flex flex-wrap items-center gap-6 text-lg">
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                   <MapPin className="w-5 h-5 text-[#D4AF37]" />
@@ -112,10 +173,10 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
             </h2>
             <p className="text-xl text-gray-600">Discover what makes this journey unforgettable</p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tour.features.map((feature, idx) => (
-              <motion.div 
+            {(tour.features ?? []).map((feature, idx) => (
+              <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -127,7 +188,7 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
                   <CheckCircle className="w-6 h-6 text-black" />
                 </div>
                 <h3 className="font-bold text-gray-900 mb-2">{feature}</h3>
-                <div className="w-full h-1 bg-gradient-to-r from-[#D4AF37] to-yellow-500 rounded-full opacity-20"></div>
+                <div className="w-full h-1 bg-gradient-to-r from-[#D4AF37] to-yellow-500 rounded-full opacity-20" />
               </motion.div>
             ))}
           </div>
@@ -142,7 +203,7 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
           </h2>
           <p className="text-xl text-gray-600">Select the perfect package for your dream journey</p>
         </motion.div>
-        
+
         <div className="grid lg:grid-cols-3 gap-8">
           {packages.map((pkg, index) => {
             const IconComponent = pkg.icon;
@@ -160,29 +221,27 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
                     🌟 MOST POPULAR
                   </div>
                 )}
-                
-                {/* Header */}
+
                 <div className={`relative h-32 bg-gradient-to-br ${pkg.gradient} flex items-center justify-center ${pkg.popular ? 'mt-8' : ''}`}>
-                  <div className="absolute inset-0 bg-black/10"></div>
-                  <motion.div 
+                  <div className="absolute inset-0 bg-black/10" />
+                  <motion.div
                     whileHover={{ rotate: 360, scale: 1.2 }}
                     transition={{ duration: 0.6 }}
                     className="relative z-10 w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30"
                   >
                     <IconComponent className="w-8 h-8 text-white" />
                   </motion.div>
-                  <div className="absolute -top-4 -left-4 w-20 h-20 bg-white/10 rounded-full"></div>
-                  <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white/5 rounded-full"></div>
+                  <div className="absolute -top-4 -left-4 w-20 h-20 bg-white/10 rounded-full" />
+                  <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white/5 rounded-full" />
                 </div>
 
-                {/* Content */}
                 <div className="p-8">
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-gray-900 mb-3">{pkg.type} Package</h3>
                     <div className="text-3xl font-bold text-[#D4AF37] mb-1">{pkg.price.usd}</div>
                     <div className="text-xl text-gray-600">{pkg.price.naira}</div>
                   </div>
-                  
+
                   <div className="space-y-4 mb-8">
                     {pkg.features.map((feature, idx) => (
                       <div key={idx} className="flex items-center gap-3">
@@ -193,14 +252,14 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
                       </div>
                     ))}
                   </div>
-                  
+
                   <motion.button
                     onClick={() => handleBookTour(pkg.type)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-2 shadow-xl ${
-                      pkg.popular 
-                        ? 'bg-gradient-to-r from-[#D4AF37] to-yellow-500 text-black hover:shadow-2xl' 
+                      pkg.popular
+                        ? 'bg-gradient-to-r from-[#D4AF37] to-yellow-500 text-black hover:shadow-2xl'
                         : 'bg-gradient-to-r from-gray-800 to-gray-900 text-white hover:from-[#D4AF37] hover:to-yellow-500 hover:text-black'
                     }`}
                   >
@@ -213,8 +272,7 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
           })}
         </div>
 
-        {/* Bottom CTA */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
@@ -234,10 +292,6 @@ export function TourDetailPage({ tour, onBack, onBookTour }: TourDetailPageProps
               <div className="flex items-center gap-2">
                 <Award className="w-4 h-4 text-[#D4AF37]" />
                 <span>Best Price Guarantee</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-[#D4AF37]" />
-                <span>24/7 Support</span>
               </div>
             </div>
           </div>

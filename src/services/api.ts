@@ -95,6 +95,7 @@ export const apiService = {
   getHotels: (): Promise<{ hotels: ApiHotel[] }> => get('/hotels'),
   getHotel: (slug: string): Promise<{ hotel: ApiHotel }> => get(`/hotels/${slug}`),
   getTours: (): Promise<{ tours: ApiTour[] }> => get('/tours'),
+  getTour: (slug: string): Promise<{ tour: ApiTour }> => get(`/tours/${slug}`),
   getVisaPackages: (): Promise<{ packages: ApiVisaPackage[] }> => get('/visa-packages'),
   getPilgrimages: (): Promise<{ pilgrimages: ApiPilgrimage[] }> => get('/pilgrimages'),
 };
